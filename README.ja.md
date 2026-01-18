@@ -15,11 +15,11 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 ## サポートスキル
 
 ### Codex
-- `codex-review`: Codex CLI で自己レビューを回す。
+- `codex-review`: Codex CLI でセルフレビュー（`codex review`）と修正を繰り返す。
 - `ask-claude`: 実行前に計画や変更を Claude にクロスレビューしてもらう。
 
 ### Claude Code
-- `codex-review`: Claude Code から Codex review を実行する。
+- `codex-review`: Claude Code から Codex CLI の `codex review` と修正を繰り返す。
 - `ask-codex`: 実行前に計画や変更を Codex にクロスレビューしてもらう。
 
 ### 共通

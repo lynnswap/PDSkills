@@ -15,11 +15,11 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 ## Supported Skills
 
 ### Codex
-- `codex-review`: Self-review loop for code changes using the Codex CLI.
+- `codex-review`: Self-review (`codex review`) and iterate on fixes using the Codex CLI.
 - `ask-claude`: Cross-review plans or changes with Claude before execution.
 
 ### Claude Code
-- `codex-review`: Run Codex review from Claude Code.
+- `codex-review`: From Claude Code, run `codex review` via the Codex CLI and iterate on fixes.
 - `ask-codex`: Cross-review plans or changes with Codex before execution.
 
 ### Common
