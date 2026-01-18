@@ -16,11 +16,11 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 
 ### Codex
 - `codex-review`: Self-review (`codex review`) and iterate on fixes using the Codex CLI.
-- `ask-claude`: Cross-review plans or changes with Claude before execution.
+- `ask-claude`: Consult Claude for questions, feedback, reviews, or discussions.
 
 ### Claude Code
 - `codex-review`: From Claude Code, run `codex review` via the Codex CLI and iterate on fixes.
-- `ask-codex`: Cross-review plans or changes with Codex before execution.
+- `ask-codex`: Consult Codex for questions, feedback, reviews, or discussions.
 
 ### Common
 - `ios-dev-docs`: Use Xcode documentation (IDEIntelligenceChat AdditionalDocumentation) during iOS development tasks to get hints for API usage and implementation.

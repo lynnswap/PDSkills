@@ -16,11 +16,11 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 
 ### Codex
 - `codex-review`: Codex CLI でセルフレビュー（`codex review`）と修正を繰り返す。
-- `ask-claude`: 実行前に計画や変更を Claude にクロスレビューしてもらう。
+- `ask-claude`: Claude に質問・相談・レビュー・議論などを依頼する。
 
 ### Claude Code
 - `codex-review`: Claude Code から Codex CLI の `codex review` と修正を繰り返す。
-- `ask-codex`: 実行前に計画や変更を Codex にクロスレビューしてもらう。
+- `ask-codex`: Codex に質問・相談・レビュー・議論などを依頼する。
 
 ### 共通
 - `ios-dev-docs`: iOS 開発タスクで Xcode のドキュメント(IDEIntelligenceChat AdditionalDocumentation)を参照し、API の使い方や実装のヒントを得る。
