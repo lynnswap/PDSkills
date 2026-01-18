@@ -1,9 +1,9 @@
 ---
-name: branch-commit-pr
+name: ship
 description: Create a new branch from the current branch, push the branch, commit all local changes (including untracked files), run codex-review, push commits, and open a PR back to the original branch. Use when the user asks to move the current work to a new branch and open a PR to the branch they started from.
 ---
 
-# Branch Commit PR
+# Ship
 
 ## Overview
 
