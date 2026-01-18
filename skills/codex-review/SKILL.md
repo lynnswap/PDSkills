@@ -1,9 +1,9 @@
 ---
-name: codex-review-loop
+name: codex-review
 description: Self-review loop for code changes. Use when Codex edits files or prepares a PR and should run `codex exec --sandbox workspace-write review --base BASE`, fix findings, and re-run until clean (max 10). Also run tests when a test command is configured or detectable.
 ---
 
-# Codex Review Loop
+# Codex Review
 
 ## Overview
 Run tests first when possible, then run a local self-review loop with `codex exec --sandbox workspace-write review` after code changes, using a 30-minute timeout for the review command, select the most appropriate base, and re-run tests if review fixes changed code.

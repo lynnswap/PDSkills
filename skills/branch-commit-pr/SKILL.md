@@ -1,13 +1,13 @@
 ---
 name: branch-commit-pr
-description: Create a new branch from the current branch, push the branch, commit all local changes (including untracked files), run codex-review-loop, push commits, and open a PR back to the original branch. Use when the user asks to move the current work to a new branch and open a PR to the branch they started from.
+description: Create a new branch from the current branch, push the branch, commit all local changes (including untracked files), run codex-review, push commits, and open a PR back to the original branch. Use when the user asks to move the current work to a new branch and open a PR to the branch they started from.
 ---
 
 # Branch Commit PR
 
 ## Overview
 
-Move in-progress work to a new branch, push it, commit all changes, run codex-review-loop, push commits, and open a PR back to the branch that was checked out when the request started.
+Move in-progress work to a new branch, push it, commit all changes, run codex-review, push commits, and open a PR back to the branch that was checked out when the request started.
 
 ## Workflow
 
@@ -58,8 +58,8 @@ Move in-progress work to a new branch, push it, commit all changes, run codex-re
    - If the topic is `auto-...`, use `snapshot` instead.
    - Run `git commit -m "<message>"`.
 
-7. Run codex-review-loop.
-   - Invoke the `codex-review-loop` skill and follow its workflow.
+7. Run codex-review.
+   - Invoke the `codex-review` skill and follow its workflow.
    - If review changes are made, commit them (use a concise, diff-based message) and re-run the review loop as required.
    - Ensure the working tree is clean when the loop finishes.
 

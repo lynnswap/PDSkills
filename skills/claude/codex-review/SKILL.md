@@ -1,9 +1,9 @@
 ---
-name: ask-codex-review
-description: Run OpenAI Codex CLI reviews from Claude Code. Use when the user asks for a Codex review or mentions triggers like "ask-codex-review", "/ask-codex-review", or "codex review".
+name: codex-review
+description: Run OpenAI Codex CLI reviews from Claude Code. Use when the user asks for a Codex review or mentions triggers like "codex-review", "/codex-review", or "codex review".
 ---
 
-# Ask Codex Review
+# Codex Review
 
 ## Overview
 
