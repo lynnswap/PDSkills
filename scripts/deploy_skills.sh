@@ -9,6 +9,8 @@ venv_dir="${HOME}/.codex/tmp/skill-creator-venv"
 python_bin="${venv_dir}/bin/python"
 target_names=(codex claude)
 target_paths=("${HOME}/.codex/skills" "${HOME}/.claude/skills")
+copy_script="${root_dir}/scripts/copy-ios-dev-docs.sh"
+ios_dev_docs_ready=false
 
 target_index_for() {
   local name="$1"
@@ -87,6 +89,16 @@ if [ "${#selected_targets[@]}" -eq 0 ]; then
   done
 fi
 
+if [ -x "${copy_script}" ]; then
+  if "${copy_script}"; then
+    ios_dev_docs_ready=true
+  else
+    echo "Skip ios-dev-docs: failed to copy AdditionalDocumentation." >&2
+  fi
+else
+  echo "Skip ios-dev-docs: missing copy script at ${copy_script}." >&2
+fi
+
 if [ ! -d "${master_dir}" ]; then
   echo "Missing master skills dir: ${master_dir}" >&2
   exit 1
@@ -124,6 +136,14 @@ for target in "${selected_targets[@]}"; do
   target_dir="${target_paths[${target_index}]}"
   target_dist_dir="${dist_root_dir}/${target}"
   dist_link="${target_dir}/dist"
+
+  if [[ "${ios_dev_docs_ready}" != "true" ]]; then
+    ios_docs_link="${target_dir}/ios-dev-docs"
+    if [ -L "${ios_docs_link}" ]; then
+      rm "${ios_docs_link}"
+      removed=$((removed + 1))
+    fi
+  fi
 
   mkdir -p "${target_dist_dir}"
   if [ -L "${dist_link}" ]; then
@@ -163,6 +183,9 @@ for target in "${selected_targets[@]}"; do
     if [[ "${name}" == "codex" || "${name}" == "claude" ]]; then
       continue
     fi
+    if [[ "${name}" == "ios-dev-docs" && "${ios_dev_docs_ready}" != "true" ]]; then
+      continue
+    fi
     add_skill "${name}" "${skill}"
   done
 
@@ -172,6 +195,9 @@ for target in "${selected_targets[@]}"; do
       [ -d "${skill}" ] || continue
       name="$(basename "${skill}")"
       if [[ "${name}" == .* ]]; then
+        continue
+      fi
+      if [[ "${name}" == "ios-dev-docs" && "${ios_dev_docs_ready}" != "true" ]]; then
         continue
       fi
       add_skill "${name}" "${skill}"
