@@ -24,8 +24,8 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 
 ### Common
 - `ios-dev-docs`: Use Xcode IDEIntelligenceChat AdditionalDocumentation to answer iOS development questions.
-- `branch-commit-pr`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
-- `git-branch-workflow`: Create and push a new branch before work, then commit at the end.
+- `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
+- `kickoff`: Create and push a new branch before work, then commit at the end.
 
 ## Add or Update Skills
 1. Create or edit a folder under `skills/` (common), `skills/codex/`, or `skills/claude/`.

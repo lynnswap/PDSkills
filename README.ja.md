@@ -24,8 +24,8 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 
 ### 共通
 - `ios-dev-docs`: Xcode IDEIntelligenceChat AdditionalDocumentation を使って iOS 開発の質問に答える。
-- `branch-commit-pr`: 作業中の変更を新しいブランチに移し、`codex-review` を実行して PR を作成する。
-- `git-branch-workflow`: 作業開始前に新規ブランチを作成して push し、最後にコミットする。
+- `ship`: 作業中の変更を新しいブランチに移し、`codex-review` を実行して PR を作成する。
+- `kickoff`: 作業開始前に新規ブランチを作成して push し、最後にコミットする。
 
 
 ## スキルの追加・更新

@@ -1,9 +1,9 @@
 ---
-name: git-branch-workflow
+name: kickoff
 description: Create and switch to a new git branch before starting a larger task, push the branch to the remote, proceed with work, and commit at the end. Use when the user asks to start work on a fresh branch and expects a remote push plus a final commit.
 ---
 
-# Git Branch Workflow
+# Kickoff
 
 ## Overview
 Announce the branch workflow up front, but delay branch creation and push until you are about to start work. If the work spans multiple repositories, repeat the workflow per repo with separate branches and commit in each repo at the end.
