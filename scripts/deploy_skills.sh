@@ -36,11 +36,13 @@ selected_targets=()
 add_target() {
   local name="$1"
   local existing
-  for existing in "${selected_targets[@]}"; do
-    if [ "${existing}" = "${name}" ]; then
-      return
-    fi
-  done
+  if [ "${#selected_targets[@]}" -gt 0 ]; then
+    for existing in "${selected_targets[@]}"; do
+      if [ "${existing}" = "${name}" ]; then
+        return
+      fi
+    done
+  fi
   selected_targets+=("${name}")
 }
 
