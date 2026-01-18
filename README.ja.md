@@ -23,7 +23,7 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 - `ask-codex`: 実行前に計画や変更を Codex にクロスレビューしてもらう。
 
 ### 共通
-- `ios-dev-docs`: Xcode IDEIntelligenceChat AdditionalDocumentation を使って iOS 開発の質問に答える。
+- `ios-dev-docs`: iOS 開発タスクで Xcode のドキュメント(IDEIntelligenceChat AdditionalDocumentation)を参照し、API の使い方や実装のヒントを得る。
 - `ship`: 作業中の変更を新しいブランチに移し、`codex-review` を実行して PR を作成する。
 - `kickoff`: 作業開始前に新規ブランチを作成して push し、最後にコミットする。
 

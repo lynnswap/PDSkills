@@ -23,7 +23,7 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 - `ask-codex`: Cross-review plans or changes with Codex before execution.
 
 ### Common
-- `ios-dev-docs`: Use Xcode IDEIntelligenceChat AdditionalDocumentation to answer iOS development questions.
+- `ios-dev-docs`: Use Xcode documentation (IDEIntelligenceChat AdditionalDocumentation) during iOS development tasks to get hints for API usage and implementation.
 - `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
 - `kickoff`: Create and push a new branch before work, then commit at the end.
 
