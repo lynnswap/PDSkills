@@ -13,8 +13,16 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 ```
 
 ## サポートスキル
-- `codex-review` (Codex): Codex CLI で自己レビューを回す。
-- `codex-review` (Claude): Claude Code から Codex review を実行する。
+
+### Codex
+- `codex-review`: Codex CLI で自己レビューを回す。
+- `ask-claude`: 実行前に計画や変更を Claude にクロスレビューしてもらう。
+
+### Claude Code
+- `codex-review`: Claude Code から Codex review を実行する。
+- `ask-codex`: 実行前に計画や変更を Codex にクロスレビューしてもらう。
+
+### 共通
 - `ios-dev-docs`: Xcode IDEIntelligenceChat AdditionalDocumentation を使って iOS 開発の質問に答える。
 - `branch-commit-pr`: 作業中の変更を新しいブランチに移し、`codex-review` を実行して PR を作成する。
 - `git-branch-workflow`: 作業開始前に新規ブランチを作成して push し、最後にコミットする。
