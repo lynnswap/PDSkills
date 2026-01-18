@@ -21,12 +21,12 @@ Send a plan, in-progress changes, or custom context to Codex for review. Iterate
 
 1. **Determine the review mode**
    - If the user specifies a mode, use it.
-   - If auto-invoked on plan mode exit and a plan file matching `~/.codex/plans/plan-*.md` exists, default to **plan review** (even if there are uncommitted changes).
+   - If auto-invoked on plan mode exit and a plan file matching `~/.claude/plans/plan-*.md` exists, default to **plan review** (even if there are uncommitted changes).
    - If there are uncommitted changes (`git status --porcelain` is non-empty), default to **change review**.
    - Otherwise, ask the user what to review.
 
 2. **Collect the review content**
-   - **Plan review**: Read from `~/.codex/plans/plan-*.md` (use the most recently modified if multiple exist) or ask the user for the plan.
+   - **Plan review**: Read from `~/.claude/plans/plan-*.md` (use the most recently modified if multiple exist) or ask the user for the plan.
    - **Change review**: Collect both tracked and untracked changes:
      ```sh
      # Tracked changes (staged + unstaged)
@@ -60,10 +60,10 @@ Send a plan, in-progress changes, or custom context to Codex for review. Iterate
    - Also collect the original user prompt (task background) from the conversation.
 
 3. **Prepare the plans directory**
-   - Run `mkdir -p ~/.codex/plans` to ensure the directory exists.
+   - Run `mkdir -p ~/.claude/plans` to ensure the directory exists.
 
 4. **Write the review input file**
-   - Create a file at `~/.codex/plans/review-input.md` with this format:
+   - Create a file at `~/.claude/plans/review-input.md` with this format:
      ```
      ## Original Request
      <original user prompt>
@@ -93,7 +93,7 @@ Send a plan, in-progress changes, or custom context to Codex for review. Iterate
      ```
 
 6. **Run Codex**
-   - Execute: `cat ~/.codex/plans/review-input.md | codex exec --sandbox read-only -`
+   - Execute: `cat ~/.claude/plans/review-input.md | codex exec --sandbox read-only -`
    - Timeout: 5 minutes (300 seconds).
 
 7. **Parse the result**
@@ -128,7 +128,7 @@ Note: For ad-hoc reviews at any point during implementation, use `/ask-codex` ma
 - Use `--sandbox read-only` since review does not require code modifications by Codex.
 - Honor explicit user requests to skip the review.
 - Plan files use the naming convention `plan-*.md` to distinguish from `review-input.md`.
-- The review input file at `~/.codex/plans/review-input.md` persists for debugging and history.
+- The review input file at `~/.claude/plans/review-input.md` persists for debugging and history.
 - For change review, both `git diff` and untracked file contents are collected to ensure complete coverage.
 - LGTM detection uses exact line match (after trimming) to avoid false positives like "Not LGTM".
 - Binary files and files larger than 100KB are skipped to avoid input bloat.
