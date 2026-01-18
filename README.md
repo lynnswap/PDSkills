@@ -13,8 +13,16 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 ```
 
 ## Supported Skills
-- `codex-review` (Codex): Self-review loop for code changes using the Codex CLI.
-- `codex-review` (Claude): Run Codex review from Claude Code.
+
+### Codex
+- `codex-review`: Self-review loop for code changes using the Codex CLI.
+- `ask-claude`: Cross-review plans or changes with Claude before execution.
+
+### Claude Code
+- `codex-review`: Run Codex review from Claude Code.
+- `ask-codex`: Cross-review plans or changes with Codex before execution.
+
+### Common
 - `ios-dev-docs`: Use Xcode IDEIntelligenceChat AdditionalDocumentation to answer iOS development questions.
 - `branch-commit-pr`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
 - `git-branch-workflow`: Create and push a new branch before work, then commit at the end.
