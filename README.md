@@ -22,7 +22,6 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 ## Add or Update Skills
 1. Create or edit a folder under `skills/` (common), `skills/codex/`, or `skills/claude/`.
 2. Run `./scripts/deploy_skills.sh` (optionally `--target codex|claude`).
-3. Check that `dist/<target>/<name>.skill` is generated and symlinks are updated.
 
 ## Requirements
 - `python3` and `pip`
@@ -33,7 +32,7 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 - `skills/`: Common skill definition sources
 - `skills/codex/`: Codex-only skill definitions
 - `skills/claude/`: Claude-only skill definitions
-- `dist/<target>/`: Generated `.skill` packages per target
+- `.dist/<target>/`: Generated `.skill` packages per target
 - `scripts/`: Helper scripts (including deploy)
 - `Sources/`: Swift package sources (currently minimal)
 

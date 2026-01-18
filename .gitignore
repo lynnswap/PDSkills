@@ -6,6 +6,6 @@ DerivedData/
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
-dist/
+.dist/
 skills/ios-dev-docs/references/*
 !skills/ios-dev-docs/references/.gitkeep
