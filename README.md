@@ -1,31 +1,33 @@
 # PDSkills
-Codex と Claude 向けのスキル定義とパッケージング補助ツール群。
+English | [日本語](README.ja.md)
 
-## 概要
-- スキルのソースは `skills/` に配置する。
-- `.skill` のパッケージは `dist/` に生成する。
-- `~/.codex/skills` と `~/.claude/skills` にシンボリックリンクを張る。
+Skill definitions and packaging helper tools for Codex and Claude.
 
-## クイックスタート
+## Overview
+- Store skill sources under `skills/`.
+- Generate `.skill` packages under `dist/`.
+- Create symlinks in `~/.codex/skills` and `~/.claude/skills`.
+
+## Quick Start
 ```sh
 ./scripts/deploy_skills.sh
 ```
 
-## スキルの追加・更新
-1. `skills/` 配下にフォルダを作成または編集する（例: `skills/my-skill/`）。
-2. `./scripts/deploy_skills.sh` を実行する。
-3. `dist/<name>.skill` の生成とリンク更新を確認する。
+## Add or Update Skills
+1. Create or edit a folder under `skills/` (e.g., `skills/my-skill/`).
+2. Run `./scripts/deploy_skills.sh`.
+3. Check that `dist/<name>.skill` is generated and symlinks are updated.
 
-## 必要要件
-- `python3` と `pip`
-- Codex の skill-creator が以下に存在すること  
+## Requirements
+- `python3` and `pip`
+- Codex's skill-creator must exist at  
   `~/.codex/skills/.system/skill-creator/scripts/package_skill.py`
 
-## リポジトリ構成
-- `skills/`: スキル定義のソース
-- `dist/`: 生成された `.skill` パッケージ
-- `scripts/`: 補助スクリプト（デプロイ含む）
-- `Sources/`: Swift パッケージのソース（現状は最小構成）
+## Repository Layout
+- `skills/`: Skill definition sources
+- `dist/`: Generated `.skill` packages
+- `scripts/`: Helper scripts (including deploy)
+- `Sources/`: Swift package sources (currently minimal)
 
-## ライセンス
-MIT。詳細は `LICENSE` を参照。
+## License
+MIT. See `LICENSE` for details.
