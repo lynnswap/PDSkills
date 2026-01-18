@@ -3,7 +3,7 @@ set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 master_dir="${root_dir}/skills"
-dist_root_dir="${root_dir}/dist"
+dist_root_dir="${root_dir}/.dist"
 package_script="${HOME}/.codex/skills/.system/skill-creator/scripts/package_skill.py"
 venv_dir="${HOME}/.codex/tmp/skill-creator-venv"
 python_bin="${venv_dir}/bin/python"
@@ -149,6 +149,9 @@ for target in "${selected_targets[@]}"; do
   if [ -L "${dist_link}" ]; then
     link_target="$(readlink "${dist_link}")"
     if [ "${link_target}" = "${dist_root_dir}" ] || [ "${link_target}" = "${target_dist_dir}" ]; then
+      rm "${dist_link}"
+      dist_removed=$((dist_removed + 1))
+    elif [ ! -e "${dist_link}" ]; then
       rm "${dist_link}"
       dist_removed=$((dist_removed + 1))
     fi
