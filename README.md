@@ -4,21 +4,20 @@ English | [日本語](README.ja.md)
 Skill definitions and packaging helper tools for Codex and Claude.
 
 ## Overview
-- Store common skill sources under `skills/`.
-- Store agent-specific skill sources under `skills/codex/` and `skills/claude/`.
-- Generate `.skill` packages under `dist/<target>/`.
-- Create symlinks in `~/.codex/skills` and `~/.claude/skills`.
+PDSkills is a small toolkit for managing reusable skills for Codex and Claude.
+It packages skills into `.skill` artifacts and updates local skill catalogs so your agents stay in sync.
 
 ## Quick Start
 ```sh
 ./scripts/deploy_skills.sh
 ```
 
-## Deploy a Single Target
-```sh
-./scripts/deploy_skills.sh --target codex
-./scripts/deploy_skills.sh --target claude
-```
+## Supported Skills
+- `codex-review` (Codex): Self-review loop for code changes using the Codex CLI.
+- `codex-review` (Claude): Run Codex review from Claude Code.
+- `ios-dev-docs`: Use Xcode IDEIntelligenceChat AdditionalDocumentation to answer iOS development questions.
+- `branch-commit-pr`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
+- `git-branch-workflow`: Create and push a new branch before work, then commit at the end.
 
 ## Add or Update Skills
 1. Create or edit a folder under `skills/` (common), `skills/codex/`, or `skills/claude/`.
