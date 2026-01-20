@@ -110,21 +110,38 @@ Consult Codex for questions, feedback, reviews, or discussions. The conversation
      - "ANSWERED" → **answered** (for questions)
      - "CONCLUDED" → **concluded** (for discussions)
      - "DONE" → **done** (for custom)
-   - If matched, mark as **complete**.
-   - Otherwise, extract the response as **follow-up needed**.
+   - If matched, mark as **responder complete**.
+   - Otherwise, extract the response as **follow-up needed from responder**.
 
-8. **Iteration loop**
-   - If follow-up is needed:
+8. **Evaluate the response (questioner's perspective)**
+   - After receiving Codex's response, Claude evaluates:
+     - Does the response fully address the original question/concern?
+     - Are there unclear points or ambiguities that need clarification?
+     - Did new questions arise from the response?
+   - Determine questioner status:
+     - **Questioner satisfied**: No remaining questions or concerns.
+     - **Questioner has follow-ups**: Additional questions or clarifications needed.
+
+9. **Iteration loop**
+   - **Continue iteration** if ANY of the following:
+     - Responder signaled follow-up needed (no completion signal).
+     - Questioner (Claude) has remaining questions or unclear points.
+   - **Stop iteration** if BOTH:
+     - Responder signaled complete (LGTM/ANSWERED/CONCLUDED/DONE), AND
+     - Questioner (Claude) is satisfied (no remaining questions).
+   - If continuing:
      - Report the response to the user.
-     - For **question/discussion**: Add follow-up questions or clarifications if needed.
+     - If no completion signal was returned, explicitly ask for the completion signal (LGTM/ANSWERED/CONCLUDED/DONE) in the next reply.
+     - For **question/discussion**: Formulate specific follow-up questions based on unclear points or new questions that arose.
      - For **change review**: Apply fixes to the code, then re-collect the diff and untracked files.
-     - For **plan review**: Adjust the plan based on feedback.
+     - For **plan review**: Adjust the plan based on feedback, or ask for clarification on unclear feedback.
+     - Update the consultation input with follow-up questions/context.
      - Return to step 4 and resubmit.
    - Maximum 10 iterations.
 
-9. **Finish**
-   - **Complete**: Report the full response content to the user (answer, conclusion, or review result), then note the completion status and proceed.
-   - **Not complete after 10 rounds**: Report the current state and ask the user how to proceed.
+10. **Finish**
+    - **Complete**: Report the full response content to the user (answer, conclusion, or review result), then note the completion status and proceed.
+    - **Not complete after 10 rounds**: Report the current state and ask the user how to proceed.
 
 ## Auto-invocation
 
