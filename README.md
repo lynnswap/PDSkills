@@ -24,9 +24,10 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 
 ### Common
 - `ios-dev-docs`: Use Xcode documentation (IDEIntelligenceChat AdditionalDocumentation) during iOS development tasks to get hints for API usage and implementation.
-- `pr-fix`: Address PR review comments by fetching unresolved threads, applying fixes, replying, and resolving threads.
-- `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
 - `kickoff`: Create and push a new branch before work, then commit at the end.
+- `pr-fix`: Address PR review comments by fetching unresolved threads, applying fixes, replying, and resolving threads.
+- `release`: Create GitHub releases with auto-generated release notes from commit history.
+- `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
 
 ## Add or Update Skills
 1. Create or edit a folder under `skills/common/`, `skills/codex/`, or `skills/claude/`.
