@@ -1,13 +1,13 @@
 ---
 name: ship
-description: Create a new branch from the current branch, push the branch, commit all local changes (including untracked files), run codex-review, push commits, and open a PR back to the original branch. Use when the user asks to move the current work to a new branch and open a PR to the branch they started from.
+description: Create a new branch from the current branch, push the branch, commit all local changes (including untracked files), push commits, and open a PR back to the original branch. Use when the user asks to move the current work to a new branch and open a PR to the branch they started from.
 ---
 
 # Ship
 
 ## Overview
 
-Move in-progress work to a new branch, push it, commit all changes, run codex-review, push commits, and open a PR back to the branch that was checked out when the request started.
+Move in-progress work to a new branch, push it, commit all changes, push commits, and open a PR back to the branch that was checked out when the request started.
 
 ## Workflow
 
@@ -58,15 +58,10 @@ Move in-progress work to a new branch, push it, commit all changes, run codex-re
    - If the topic is `auto-...`, use `snapshot` instead.
    - Run `git commit -m "<message>"`.
 
-7. Run codex-review.
-   - Invoke the `codex-review` skill and follow its workflow.
-   - If review changes are made, commit them (use a concise, diff-based message) and re-run the review loop as required.
-   - Ensure the working tree is clean when the loop finishes.
-
-8. Push commits to the remote.
+7. Push commits to the remote.
    - Run `git push <remote> <new_branch>`.
 
-9. Create the PR.
+8. Create the PR.
    - Title: use the commit subject line.
    - Body: use this template, with a brief summary if possible:
      - Summary:
@@ -75,6 +70,6 @@ Move in-progress work to a new branch, push it, commit all changes, run codex-re
        - `- Not run (not requested)` unless the user asked for tests
    - Run `gh pr create -B <base_branch> -H <new_branch> -t "<title>" -b "<body>"`.
 
-10. Return to the base branch and report results.
+9. Return to the base branch and report results.
    - Run `git switch <base_branch>`.
    - Report the new branch name and the PR URL.
