@@ -20,6 +20,10 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
 4. If findings exist, fix them in the codebase and re-run the same review target.
 5. Repeat until no findings remain or after 10 loops, then report status.
 
+## Timeout
+
+**Important**: `codex review` can take a long time (several minutes). Always set a **30-minute timeout** (1800000 ms) when running the command to ensure it completes.
+
 ## Command templates
 
 ```sh
