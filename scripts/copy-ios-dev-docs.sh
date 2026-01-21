@@ -6,13 +6,13 @@ usage() {
 Usage: copy-ios-dev-docs.sh [--xcode <Xcode.app>] [--source <AdditionalDocumentation dir>] [--dest <dir>] [--interactive] [--list]
 
 Copies Xcode IDEIntelligenceChat AdditionalDocumentation into this repo's
-`skills/ios-dev-docs/references` folder (which is git-ignored).
+`skills/common/ios-dev-docs/references` folder (which is git-ignored).
 Defaults to the active Xcode selected by `xcode-select -p`.
 
 Options:
   --xcode, --xcode-app  Path to Xcode.app (or Contents/Developer).
   --source              Path to AdditionalDocumentation directory.
-  --dest                Destination directory (default: skills/ios-dev-docs/references).
+  --dest                Destination directory (default: skills/common/ios-dev-docs/references).
   --interactive          Always prompt when auto-detecting Xcode apps.
   --list                 List detected Xcode apps and exit.
   -h, --help             Show this help.
@@ -70,7 +70,7 @@ collect_candidates() {
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-dest_dir="$repo_root/skills/ios-dev-docs/references"
+dest_dir="$repo_root/skills/common/ios-dev-docs/references"
 
 xcode_app="${XCODE_APP:-}"
 xcode_app_explicit=false

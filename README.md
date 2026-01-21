@@ -28,7 +28,7 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 - `kickoff`: Create and push a new branch before work, then commit at the end.
 
 ## Add or Update Skills
-1. Create or edit a folder under `skills/` (common), `skills/codex/`, or `skills/claude/`.
+1. Create or edit a folder under `skills/common/`, `skills/codex/`, or `skills/claude/`.
 2. Run `./scripts/deploy_skills.sh` (optionally `--target codex|claude`).
 
 ## Requirements
@@ -37,7 +37,7 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
   `~/.codex/skills/.system/skill-creator/scripts/package_skill.py`
 
 ## Repository Layout
-- `skills/`: Common skill definition sources
+- `skills/common/`: Common skill definition sources
 - `skills/codex/`: Codex-only skill definitions
 - `skills/claude/`: Claude-only skill definitions
 - `.dist/<target>/`: Generated `.skill` packages per target

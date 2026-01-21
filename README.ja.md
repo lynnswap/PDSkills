@@ -29,7 +29,7 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 
 
 ## スキルの追加・更新
-1. `skills/`（共通）、`skills/codex/`、`skills/claude/` 配下にフォルダを作成または編集する。
+1. `skills/common/`、`skills/codex/`、`skills/claude/` 配下にフォルダを作成または編集する。
 2. `./scripts/deploy_skills.sh` を実行する（必要なら `--target codex|claude`）。
 
 ## 必要要件
@@ -38,7 +38,7 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
   `~/.codex/skills/.system/skill-creator/scripts/package_skill.py`
 
 ## リポジトリ構成
-- `skills/`: 共通スキル定義のソース
+- `skills/common/`: 共通スキル定義のソース
 - `skills/codex/`: Codex 専用のスキル定義
 - `skills/claude/`: Claude 専用のスキル定義
 - `.dist/<target>/`: 生成された `.skill` パッケージ（対象別）

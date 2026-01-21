@@ -7,5 +7,5 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
 .dist/
-skills/ios-dev-docs/references/*
-!skills/ios-dev-docs/references/.gitkeep
+skills/common/ios-dev-docs/references/*
+!skills/common/ios-dev-docs/references/.gitkeep
