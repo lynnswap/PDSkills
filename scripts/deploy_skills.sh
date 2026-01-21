@@ -3,6 +3,7 @@ set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 master_dir="${root_dir}/skills"
+common_dir="${master_dir}/common"
 dist_root_dir="${root_dir}/.dist"
 package_script="${HOME}/.codex/skills/.system/skill-creator/scripts/package_skill.py"
 venv_dir="${HOME}/.codex/tmp/skill-creator-venv"
@@ -103,6 +104,10 @@ if [ ! -d "${master_dir}" ]; then
   echo "Missing master skills dir: ${master_dir}" >&2
   exit 1
 fi
+if [ ! -d "${common_dir}" ]; then
+  echo "Missing common skills dir: ${common_dir}" >&2
+  exit 1
+fi
 
 if [ ! -f "${package_script}" ]; then
   echo "Missing package script: ${package_script}" >&2
@@ -177,13 +182,10 @@ for target in "${selected_targets[@]}"; do
     skill_paths+=("${path}")
   }
 
-  for skill in "${master_dir}"/*; do
+  for skill in "${common_dir}"/*; do
     [ -d "${skill}" ] || continue
     name="$(basename "${skill}")"
     if [[ "${name}" == .* ]]; then
-      continue
-    fi
-    if [[ "${name}" == "codex" || "${name}" == "claude" ]]; then
       continue
     fi
     if [[ "${name}" == "ios-dev-docs" && "${ios_dev_docs_ready}" != "true" ]]; then
