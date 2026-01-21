@@ -31,13 +31,13 @@ Streamline the workflow for addressing PR review comments. This skill:
      ```
 
 3. **Fetch unresolved review threads**
-   - Use GraphQL to get all review threads:
+   - Use GraphQL with pagination to get all review threads:
      ```sh
      gh api graphql -f query='
-       query($owner: String!, $repo: String!, $pr: Int!) {
+       query($owner: String!, $repo: String!, $pr: Int!, $after: String) {
          repository(owner: $owner, name: $repo) {
            pullRequest(number: $pr) {
-             reviewThreads(first: 50) {
+             reviewThreads(first: 50, after: $after) {
                nodes {
                  id
                  isResolved
@@ -52,11 +52,60 @@ Streamline the workflow for addressing PR review comments. This skill:
                    }
                  }
                }
+               pageInfo {
+                 hasNextPage
+                 endCursor
+               }
              }
            }
          }
        }
      ' -f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER"
+     ```
+   - Loop until `hasNextPage` is false and merge `nodes` from each page:
+     ```sh
+     after=""
+     has_next="true"
+     nodes_file="$(mktemp)"
+     : > "$nodes_file"
+     while [ "$has_next" = "true" ]; do
+       args=(-f owner="$OWNER" -f repo="$REPO" -F pr="$PR_NUMBER")
+       if [ -n "$after" ]; then
+         args+=(-F after="$after")
+       fi
+       resp="$(gh api graphql -f query='
+         query($owner: String!, $repo: String!, $pr: Int!, $after: String) {
+           repository(owner: $owner, name: $repo) {
+             pullRequest(number: $pr) {
+               reviewThreads(first: 50, after: $after) {
+                 nodes {
+                   id
+                   isResolved
+                   path
+                   line
+                   comments(first: 10) {
+                     nodes {
+                       id
+                       databaseId
+                       body
+                       author { login }
+                     }
+                   }
+                 }
+                 pageInfo {
+                   hasNextPage
+                   endCursor
+                 }
+               }
+             }
+           }
+         }
+       ' "${args[@]}")"
+       printf '%s' "$resp" | jq -c '.data.repository.pullRequest.reviewThreads.nodes[]' >> "$nodes_file"
+       has_next="$(printf '%s' "$resp" | jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.hasNextPage')"
+       after="$(printf '%s' "$resp" | jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.endCursor')"
+     done
+     threads="$(jq -s '.' "$nodes_file")"
      ```
    - Filter to only unresolved threads (`isResolved: false`).
    - Extract priority badges (P1/P2/P3) from comment body if present.
