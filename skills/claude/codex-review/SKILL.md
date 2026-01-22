@@ -15,12 +15,29 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
    - If the user specifies a target, follow it.
    - Otherwise, prefer `--uncommitted` when there are local changes.
    - If there are no local changes, use `--base origin/main` (or the repo default).
-2. If the user wants to override the review model, append `-c review_model="MODEL"` to the command (default stays as-is when omitted).
-3. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the command (default stays as-is when omitted). Use a value supported by the review model.
-4. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 2 and `-c model_reasoning_effort="EFFORT"` from step 3).
-5. Read the review output and extract actionable findings.
-6. If findings exist, fix them in the codebase and re-run the same review target.
-7. Repeat until no findings remain or after 10 loops, then report status.
+2. Prepare the temp environment under `~/.codex/tmp` (see "Temp directory setup"). Ensure these env vars are set before running `codex review`.
+3. If the user wants to override the review model, append `-c review_model="MODEL"` to the command (default stays as-is when omitted).
+4. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the command (default stays as-is when omitted). Use a value supported by the review model.
+5. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 3 and `-c model_reasoning_effort="EFFORT"` from step 4).
+6. Read the review output and extract actionable findings.
+7. If findings exist, fix them in the codebase and re-run the same review target.
+8. Repeat until no findings remain or after 10 loops, then report status.
+
+## Temp directory setup
+
+Use a per-run temp directory to avoid `/tmp` failures in sandboxed environments. Set these env vars before running `codex review`.
+
+```sh
+mkdir -p ~/.codex/tmp
+TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)"
+ZDOTDIR="$TMPDIR/zsh"
+mkdir -p "$ZDOTDIR"
+XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
+DARWIN_USER_TEMP_DIR="$TMPDIR"
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR
+```
+
+Only `~/.codex/tmp` is allowed for temp usage. Do not create temp directories inside the repo or under `/tmp`.
 
 ## Timeout
 
@@ -28,20 +45,39 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
 
 ## Command templates
 
+Always include the temp directory setup before running `codex review`:
+
 ```sh
+mkdir -p ~/.codex/tmp && \
+TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)" && \
+ZDOTDIR="$TMPDIR/zsh" && \
+mkdir -p "$ZDOTDIR" && \
+XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
+DARWIN_USER_TEMP_DIR="$TMPDIR" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
 codex review --uncommitted [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
+mkdir -p ~/.codex/tmp && \
+TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)" && \
+ZDOTDIR="$TMPDIR/zsh" && \
+mkdir -p "$ZDOTDIR" && \
+XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
+DARWIN_USER_TEMP_DIR="$TMPDIR" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
 codex review --base <branch> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
+mkdir -p ~/.codex/tmp && \
+TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)" && \
+ZDOTDIR="$TMPDIR/zsh" && \
+mkdir -p "$ZDOTDIR" && \
+XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
+DARWIN_USER_TEMP_DIR="$TMPDIR" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
 codex review --commit <sha> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
-```
-
-```sh
-codex review --base <branch> "<custom review prompt>" [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ## Output handling
