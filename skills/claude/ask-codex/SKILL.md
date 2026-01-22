@@ -89,6 +89,8 @@ Consult Codex for questions, feedback, reviews, or discussions. The conversation
 
 5. **Set up the temp environment**
    - Prepare a temp directory under `~/.claude/tmp` (same as codex-review):
+     - Claude Code runs each shell command in a fresh process, so `export` does not persist across commands.
+     - Always run the temp setup and `codex exec` in the same shell invocation.
      ```sh
      mkdir -p ~/.claude/tmp
      TMPDIR="$(mktemp -d ~/.claude/tmp/ask-codex.XXXXXXXX)"
@@ -100,7 +102,17 @@ Consult Codex for questions, feedback, reviews, or discussions. The conversation
      ```
 
 6. **Run Codex**
-   - Execute: `cat ~/.claude/plans/consultation-input.md | codex exec --sandbox read-only -`
+   - Execute the temp setup and `codex exec` in the same shell invocation:
+     ```sh
+     mkdir -p ~/.claude/tmp && \
+     TMPDIR="$(mktemp -d ~/.claude/tmp/ask-codex.XXXXXXXX)" && \
+     ZDOTDIR="$TMPDIR/zsh" && \
+     mkdir -p "$ZDOTDIR" && \
+     XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
+     DARWIN_USER_TEMP_DIR="$TMPDIR" && \
+     export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
+     cat ~/.claude/plans/consultation-input.md | codex exec --sandbox read-only -
+     ```
    - Timeout: 5 minutes (300 seconds).
 
 7. **Parse the result**
