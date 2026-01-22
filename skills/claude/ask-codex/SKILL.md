@@ -88,10 +88,10 @@ Consult Codex for questions, feedback, reviews, or discussions. The conversation
      ```
 
 5. **Set up the temp environment**
-   - Prepare a temp directory under `~/.codex/tmp` (same as codex-review):
+   - Prepare a temp directory under `~/.claude/tmp` (same as codex-review):
      ```sh
-     mkdir -p ~/.codex/tmp
-     TMPDIR="$(mktemp -d ~/.codex/tmp/ask-codex.XXXXXXXX)"
+     mkdir -p ~/.claude/tmp
+     TMPDIR="$(mktemp -d ~/.claude/tmp/ask-codex.XXXXXXXX)"
      ZDOTDIR="$TMPDIR/zsh"
      mkdir -p "$ZDOTDIR"
      XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
