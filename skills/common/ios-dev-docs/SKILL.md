@@ -34,6 +34,7 @@ Use the bundled Xcode IDEIntelligenceChat AdditionalDocumentation to answer iOS 
 - Foundation Models: `FoundationModels-*.md`
 - Accessibility: `Implementing-Assistive-Access-in-iOS.md`
 - Visual Intelligence: `Implementing-Visual-Intelligence-in-iOS.md`
+- Localization: `docs/Localization-Apple-Glossary.md`
 
 ## Tips
 
