@@ -16,10 +16,11 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
    - Otherwise, prefer `--uncommitted` when there are local changes.
    - If there are no local changes, use `--base origin/main` (or the repo default).
 2. If the user wants to override the review model, append `-c review_model="MODEL"` to the command (default stays as-is when omitted).
-3. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 2).
-4. Read the review output and extract actionable findings.
-5. If findings exist, fix them in the codebase and re-run the same review target.
-6. Repeat until no findings remain or after 10 loops, then report status.
+3. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the command (default stays as-is when omitted). Use a value supported by the review model.
+4. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 2 and `-c model_reasoning_effort="EFFORT"` from step 3).
+5. Read the review output and extract actionable findings.
+6. If findings exist, fix them in the codebase and re-run the same review target.
+7. Repeat until no findings remain or after 10 loops, then report status.
 
 ## Timeout
 
@@ -28,19 +29,19 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
 ## Command templates
 
 ```sh
-codex review --uncommitted [-c review_model="MODEL"]
+codex review --uncommitted [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
-codex review --base <branch> [-c review_model="MODEL"]
+codex review --base <branch> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
-codex review --commit <sha> [-c review_model="MODEL"]
+codex review --commit <sha> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
-codex review --base <branch> "<custom review prompt>" [-c review_model="MODEL"]
+codex review --base <branch> "<custom review prompt>" [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ## Output handling
