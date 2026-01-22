@@ -14,11 +14,12 @@ Run tests first when possible, then run a local self-review loop with `codex exe
 3. Resolve the test command (see "Test selection") and run tests now. If tests fail, fix and repeat step 3. If no test command is found, continue.
 4. Prepare the temp environment under `~/.codex/tmp` (see "Temp directory setup"). Ensure these env vars are set in the `codex exec --sandbox workspace-write review` process environment (do not rely on a shell wrapper).
 5. Resolve the review base (see "Base selection").
-6. Run `codex exec --sandbox workspace-write review --base <base>` with the temp env from step 4, using a 30-minute (1800s) timeout.
+6. If the user wants to override the review model, append `-c review_model="MODEL"` to the review command (default stays as-is when omitted).
+7. Run `codex exec --sandbox workspace-write review --base <base>` (plus the optional `-c review_model="MODEL"` from step 6) with the temp env from step 4, using a 30-minute (1800s) timeout.
 7. If findings exist, fix them.
 8. If this is a base-branch review and fixes were made, commit the fixes before re-running the review (see "Commit-before-rereview").
-9. Repeat steps 6-8 until clean or 10 iterations.
-10. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 6.
+9. Repeat steps 7-8 until clean or 10 iterations.
+10. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 7.
 11. Stop after 10 iterations and report remaining issues with context.
 
 ## Temp directory setup
@@ -47,7 +48,7 @@ mkdir -p "$ZDOTDIR"
 XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
 DARWIN_USER_TEMP_DIR="$TMPDIR"
 export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR
-codex exec --sandbox workspace-write review --base <base>
+codex exec --sandbox workspace-write review --base <base> [-c review_model="MODEL"]
 ```
 
 If you cannot set these env vars directly on the `codex review` process, stop and ask the user.

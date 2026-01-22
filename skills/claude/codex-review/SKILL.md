@@ -15,10 +15,11 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
    - If the user specifies a target, follow it.
    - Otherwise, prefer `--uncommitted` when there are local changes.
    - If there are no local changes, use `--base origin/main` (or the repo default).
-2. Run `codex review` with the chosen target and any custom prompt.
-3. Read the review output and extract actionable findings.
-4. If findings exist, fix them in the codebase and re-run the same review target.
-5. Repeat until no findings remain or after 10 loops, then report status.
+2. If the user wants to override the review model, append `-c review_model="MODEL"` to the command (default stays as-is when omitted).
+3. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 2).
+4. Read the review output and extract actionable findings.
+5. If findings exist, fix them in the codebase and re-run the same review target.
+6. Repeat until no findings remain or after 10 loops, then report status.
 
 ## Timeout
 
@@ -27,19 +28,19 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
 ## Command templates
 
 ```sh
-codex review --uncommitted
+codex review --uncommitted [-c review_model="MODEL"]
 ```
 
 ```sh
-codex review --base <branch>
+codex review --base <branch> [-c review_model="MODEL"]
 ```
 
 ```sh
-codex review --commit <sha>
+codex review --commit <sha> [-c review_model="MODEL"]
 ```
 
 ```sh
-codex review --base <branch> "<custom review prompt>"
+codex review --base <branch> "<custom review prompt>" [-c review_model="MODEL"]
 ```
 
 ## Output handling
