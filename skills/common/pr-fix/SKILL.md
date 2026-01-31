@@ -109,11 +109,13 @@ Streamline the workflow for addressing PR review comments. This skill:
      ```
    - Filter to only unresolved threads (`isResolved: false`).
    - Extract priority badges (P1/P2/P3) from comment body if present.
+   - **Record both `threadId` and the top-level comment `databaseId`** for each thread. Never rely on `path+line` for identity; line numbers drift after edits.
 
 4. **Display unresolved threads**
    - Show a numbered list with:
      - File path and line number
      - Priority badge (if any)
+     - Top-level comment `databaseId`
      - First 2-3 lines of the comment body
      - Author
    - If no unresolved threads, report success and exit.
@@ -188,6 +190,7 @@ When dry run is selected:
 - **API rate limiting**: Pause and retry with backoff
 - **Thread already resolved**: Skip and move to next
 - **Multiple comments in thread**: Reply to the first (top-level) comment only
+- **Line numbers drifted**: Re-fetch threads and match by top-level comment `databaseId` (or exact comment `id`), not by `path+line`.
 
 ## Integration with Other Skills
 
@@ -201,6 +204,7 @@ After completing all fixes:
 - If not authenticated, prompt `gh auth login`
 - If GraphQL query fails, show the error and suggest manual URL
 - If reply fails, show the error but continue with resolve attempt
+- If resolve fails because the thread cannot be found, re-fetch threads and match by top-level comment `databaseId`. Do not fall back to `path+line`.
 
 ## Examples
 
