@@ -120,13 +120,14 @@ Streamline the workflow for addressing PR review comments. This skill:
      - Author
    - If no unresolved threads, report success and exit.
 
-5. **Ask user for approach**
-   - Options:
-     - Address all sequentially (recommended)
+5. **Proceed with all threads by default**
+   - Do **not** ask which threads to handle.
+   - Address all unresolved threads sequentially.
+   - Only if the user explicitly requests it, switch to:
      - Select specific threads by number
      - Dry run (show what would be done without executing)
 
-6. **For each selected thread**:
+6. **For each thread**:
    a. **Show full context**
       - Display the complete comment
       - Read the relevant file and show surrounding code
@@ -169,7 +170,7 @@ Streamline the workflow for addressing PR review comments. This skill:
 
 ## Dry Run Mode
 
-When dry run is selected:
+When dry run is explicitly requested:
 - List all unresolved threads with full details
 - For each thread, describe what action would be taken
 - Do NOT make any API calls to post replies or resolve threads
