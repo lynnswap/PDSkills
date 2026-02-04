@@ -5,7 +5,6 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 master_dir="${root_dir}/skills"
 common_dir="${master_dir}/common"
 dist_root_dir="${root_dir}/.dist"
-package_script="${HOME}/.codex/skills/.system/skill-creator/scripts/package_skill.py"
 venv_dir="${HOME}/.codex/tmp/skill-creator-venv"
 python_bin="${venv_dir}/bin/python"
 target_names=(codex claude)
@@ -33,6 +32,126 @@ Options:
   --target  Limit deployment to a single target.
   -h, --help  Show this help.
 EOF
+}
+
+package_skill() {
+  local skill_dir="$1"
+  local out_dir="$2"
+  local name
+  name="$(basename "${skill_dir}")"
+  local out="${out_dir}/${name}.skill"
+
+  "${python_bin}" - "${skill_dir}" "${out}" <<'PY'
+import re
+import sys
+import zipfile
+from pathlib import Path
+
+import yaml
+
+MAX_SKILL_NAME_LENGTH = 64
+
+skill_dir = Path(sys.argv[1]).resolve()
+out = Path(sys.argv[2]).resolve()
+base_dir = skill_dir.parent
+
+
+def validate_skill(skill_path: Path):
+    skill_md = skill_path / "SKILL.md"
+    if not skill_md.exists():
+        return False, "SKILL.md not found"
+
+    content = skill_md.read_text()
+    if not content.startswith("---"):
+        return False, "No YAML frontmatter found"
+
+    match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
+    if not match:
+        return False, "Invalid frontmatter format"
+
+    frontmatter_text = match.group(1)
+    try:
+        frontmatter = yaml.safe_load(frontmatter_text)
+        if not isinstance(frontmatter, dict):
+            return False, "Frontmatter must be a YAML dictionary"
+    except yaml.YAMLError as e:
+        return False, f"Invalid YAML in frontmatter: {e}"
+
+    allowed_properties = {"name", "description", "license", "allowed-tools", "metadata"}
+    unexpected_keys = set(frontmatter.keys()) - allowed_properties
+    if unexpected_keys:
+        allowed = ", ".join(sorted(allowed_properties))
+        unexpected = ", ".join(sorted(unexpected_keys))
+        return (
+            False,
+            f"Unexpected key(s) in SKILL.md frontmatter: {unexpected}. Allowed properties are: {allowed}",
+        )
+
+    if "name" not in frontmatter:
+        return False, "Missing 'name' in frontmatter"
+    if "description" not in frontmatter:
+        return False, "Missing 'description' in frontmatter"
+
+    name = frontmatter.get("name", "")
+    if not isinstance(name, str):
+        return False, f"Name must be a string, got {type(name).__name__}"
+    name = name.strip()
+    if name:
+        if not re.match(r"^[a-z0-9-]+$", name):
+            return (
+                False,
+                f"Name '{name}' should be hyphen-case (lowercase letters, digits, and hyphens only)",
+            )
+        if name.startswith("-") or name.endswith("-") or "--" in name:
+            return (
+                False,
+                f"Name '{name}' cannot start/end with hyphen or contain consecutive hyphens",
+            )
+        if len(name) > MAX_SKILL_NAME_LENGTH:
+            return (
+                False,
+                f"Name is too long ({len(name)} characters). Maximum is {MAX_SKILL_NAME_LENGTH} characters.",
+            )
+
+    description = frontmatter.get("description", "")
+    if not isinstance(description, str):
+        return False, f"Description must be a string, got {type(description).__name__}"
+    description = description.strip()
+    if description:
+        if "<" in description or ">" in description:
+            return False, "Description cannot contain angle brackets (< or >)"
+        if len(description) > 1024:
+            return (
+                False,
+                f"Description is too long ({len(description)} characters). Maximum is 1024 characters.",
+            )
+
+    return True, "Skill is valid!"
+
+
+valid, message = validate_skill(skill_dir)
+if not valid:
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def should_skip(path: Path) -> bool:
+    if path.name == ".DS_Store":
+        return True
+    if ".git" in path.parts:
+        return True
+    return False
+
+
+with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+    for path in skill_dir.rglob("*"):
+        if path.is_dir():
+            continue
+        if should_skip(path):
+            continue
+        rel = path.relative_to(base_dir)
+        zf.write(path, rel.as_posix())
+PY
 }
 
 selected_targets=()
@@ -106,11 +225,6 @@ if [ ! -d "${master_dir}" ]; then
 fi
 if [ ! -d "${common_dir}" ]; then
   echo "Missing common skills dir: ${common_dir}" >&2
-  exit 1
-fi
-
-if [ ! -f "${package_script}" ]; then
-  echo "Missing package script: ${package_script}" >&2
   exit 1
 fi
 
@@ -212,7 +326,7 @@ for target in "${selected_targets[@]}"; do
   for i in "${!skill_names[@]}"; do
     name="${skill_names[$i]}"
     skill="${skill_paths[$i]}"
-    "${python_bin}" "${package_script}" "${skill}" "${target_dist_dir}"
+    package_skill "${skill}" "${target_dist_dir}"
     dest="${target_dir}/${name}"
     if [ -e "${dest}" ] && [ ! -L "${dest}" ]; then
       echo "Skip existing non-symlink: ${dest}"
