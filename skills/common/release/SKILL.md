@@ -57,12 +57,17 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
      ```
 
 5. **Categorize changes**
+   - Apply the user-facing gate first:
+     - Include **user-facing changes only**.
+     - Prefer items that are **user-visible changes**, have **external impact / customer-facing changes**, represent **behavioral changes**, or are **public API/behavior changes**.
+     - Exclude internal-only work (tests, CI, build, refactor, internal docs) unless it has clear external impact.
+     - If unclear, mark it for user confirmation during the draft review.
    - Parse commit messages and group by type:
      - **New Features**: `feat:` prefix or new functionality
      - **Bug Fixes**: `fix:` prefix
      - **Improvements**: `refactor:`, `perf:` prefixes
-     - **Documentation**: `docs:` prefix
-     - **Other Changes**: `chore:`, `test:`, `ci:`, `build:`, etc.
+     - **Documentation**: `docs:` prefix (user-facing documentation only)
+     - **Other Changes**: user-facing changes that do not fit other categories (e.g., minor compatibility changes, small UX tweaks, accessibility improvements, localization updates)
    - For non-conventional commits, infer category from content.
 
 6. **Generate release notes draft**
@@ -86,6 +91,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
      - <Improvement description>
 
      ### Other Changes
+     *(User-facing only: minor compatibility changes, small UX tweaks, accessibility improvements, localization updates)*
 
      - <Other change description>
 
@@ -99,6 +105,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
 
 7. **Present draft to user**
    - Display the generated release notes.
+   - Call out any unclear items and ask whether they should be included as user-facing changes.
    - Ask for confirmation or edits:
      - Confirm and create
      - Edit the notes (user provides corrections)
@@ -124,6 +131,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
 
 ## Release Notes Guidelines
 
+- **User-facing changes only**: Include user-visible changes, external impact/customer-facing changes, behavioral changes, and public API/behavior changes. Use **Other Changes** only for user-facing items that do not fit other sections (e.g., minor compatibility changes, small UX tweaks, accessibility improvements, localization updates).
 - **Be concise**: 1-2 sentences per item.
 - **Focus on user impact**: What changed for users, not implementation details.
 - **Group related changes**: Multiple commits for one feature become one entry.
