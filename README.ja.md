@@ -14,20 +14,32 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 
 ## サポートスキル
 
-### Codex
+### アクション型スキル
+
+明示的に呼び出して実行するスキル。`/skill-name` で起動する。
+
+#### Codex
 - `codex-review`: Codex CLI の `codex review` を実行し、レビューと修正を繰り返す。
 - `ask-claude`: Claude に質問・相談・レビュー・議論などを依頼する。
 
-### Claude Code
+#### Claude Code
 - `codex-review`: Claude Code から Codex CLI の `codex review` を実行し、レビューと修正を繰り返す。
 - `ask-codex`: Codex に質問・相談・レビュー・議論などを依頼する。
 
-### 共通
-- `ios-dev-docs`: iOS 開発タスクで Xcode のドキュメント(IDEIntelligenceChat AdditionalDocumentation)を参照し、API の使い方や実装のヒントを得る。
+#### 共通
 - `kickoff`: 作業開始前に新規ブランチを作成して push し、最後にコミットする。
 - `pr-fix`: PR レビューコメントへの対応を効率化し、未解決スレッド取得・修正・返信・解決を行う。
 - `release`: コミット履歴からリリースノートを自動生成し、GitHub リリースを作成する。
 - `ship`: 作業中の変更を新しいブランチに移し、`codex-review` を実行して PR を作成する。
+
+### ガイドライン/リファレンス型
+
+開発フローやドキュメント参照のルールを定義するスキル。
+これらは単体で呼び出すのではなく、`AGENTS.md` や `CLAUDE.md` から参照して自動適用させる使い方を想定している。
+
+#### 共通
+- `xcode-mcp-workflow`: Xcode MCP を使った Apple プラットフォーム開発のワークフローと実用例のガイド。
+- `ios-dev-docs`: iOS 開発タスクで Xcode のドキュメント(IDEIntelligenceChat AdditionalDocumentation)を参照するためのガイド。
 
 
 ## スキルの追加・更新
