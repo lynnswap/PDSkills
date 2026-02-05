@@ -1,0 +1,3 @@
+interface:
+  display_name: "Xcode MCP Workflow"
+  short_description: "Xcode MCP-first development workflow"

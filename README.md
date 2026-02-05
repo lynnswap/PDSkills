@@ -14,20 +14,32 @@ It packages skills into `.skill` artifacts and updates local skill catalogs so y
 
 ## Supported Skills
 
-### Codex
+### Action Skills
+
+Explicitly invoked skills that perform specific tasks. Trigger with `/skill-name`.
+
+#### Codex
 - `codex-review`: Run `codex review` via the Codex CLI and iterate on reviews and fixes.
 - `ask-claude`: Consult Claude for questions, feedback, reviews, or discussions.
 
-### Claude Code
+#### Claude Code
 - `codex-review`: From Claude Code, run `codex review` via the Codex CLI and iterate on reviews and fixes.
 - `ask-codex`: Consult Codex for questions, feedback, reviews, or discussions.
 
-### Common
-- `ios-dev-docs`: Use Xcode documentation (IDEIntelligenceChat AdditionalDocumentation) during iOS development tasks to get hints for API usage and implementation.
+#### Common
 - `kickoff`: Create and push a new branch before work, then commit at the end.
 - `pr-fix`: Address PR review comments by fetching unresolved threads, applying fixes, replying, and resolving threads.
 - `release`: Create GitHub releases with auto-generated release notes from commit history.
 - `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
+
+### Guideline / Reference Skills
+
+Skills that define development workflows or documentation lookup rules.
+These are not meant to be invoked standalone; instead, reference them from `AGENTS.md` or `CLAUDE.md` for automatic application.
+
+#### Common
+- `xcode-mcp-workflow`: Workflow guide for Apple platform development using Xcode MCP, with practical tool examples.
+- `ios-dev-docs`: Guide for referencing Xcode documentation (IDEIntelligenceChat AdditionalDocumentation) during iOS development tasks.
 
 ## Add or Update Skills
 1. Create or edit a folder under `skills/common/`, `skills/codex/`, or `skills/claude/`.
