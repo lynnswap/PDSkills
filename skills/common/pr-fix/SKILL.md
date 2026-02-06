@@ -29,7 +29,13 @@ Streamline the workflow for addressing PR review comments. This skill:
      - If the user provides a PR URL, parse `owner` and `repo` from it (e.g. `https://github.com/<owner>/<repo>/pull/<number>`).
      - Otherwise, determine `owner` and `repo` from `git remote get-url origin` (or another selected remote if `origin` is missing).
      - Fork workflow note: if an `upstream` remote exists and points to a different GitHub repo than `origin`, also capture `upstream_owner`/`upstream_repo` from `git remote get-url upstream` (PRs are often opened in the upstream repo).
-   - If the user provides a PR number or URL, use it.
+   - If the user provides a PR URL, parse `pull_number` from it and use the parsed `owner`/`repo`.
+   - If the user provides a PR number (without a URL), set `pull_number` and resolve which repo it belongs to:
+     - If `upstream_owner`/`upstream_repo` are available, try resolving the PR number against the upstream repo first (preferred):
+       - Prefer a lightweight PR metadata fetch (via GitHub MCP if available, otherwise `gh pr view <pull_number> --repo <upstream_owner>/<upstream_repo>`).
+       - If it exists, use `<upstream_owner>/<upstream_repo>` for all subsequent API calls (fetch/reply/resolve).
+       - Otherwise, fall back to `<owner>/<repo>` (derived from the selected remote).
+     - If no upstream remote is available, use `<owner>/<repo>`.
    - Otherwise, detect from the current branch:
      - Get the current branch: `git rev-parse --abbrev-ref HEAD`
      - Use GitHub MCP `list_pull_requests` with:
