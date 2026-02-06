@@ -31,13 +31,15 @@ Move in-progress work to a new branch, push it, commit all changes, push commits
      - Combine to `<prefix><topic>`.
    - Ensure the name is unique:
      - If `git show-ref --verify --quiet refs/heads/<name>` succeeds, append `-2`, `-3`, ...
-     - Also check remote with `git ls-remote --heads origin <name>`.
+     - Also check remote with `git ls-remote --heads <remote> <name>` (use the same `<remote>` you will push to in step 4; default `origin`).
 
 3. Create the branch.
    - Run `git switch -c <new_branch>` (or `git checkout -b <new_branch>` if needed).
 
 4. Push the new branch (before committing).
-   - Use `origin` by default. If `origin` is missing, pick the first remote from `git remote` and note it.
+   - Decide `remote`:
+     - Use `origin` by default.
+     - If `origin` is missing, pick the first remote from `git remote` and note it.
    - Run `git push -u <remote> <new_branch>`.
 
 5. Stage all changes (including untracked files).
@@ -68,7 +70,7 @@ Move in-progress work to a new branch, push it, commit all changes, push commits
        - `- Move current work to <new_branch>` (fallback if no better summary)
      - Testing:
        - `- Not run (not requested)` unless the user asked for tests
-   - Determine `owner` and `repo` from `origin` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
+   - Determine `owner` and `repo` from `<remote>` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
    - Use GitHub MCP `create_pull_request` with:
      - `owner`: `<owner>`
      - `repo`: `<repo>`

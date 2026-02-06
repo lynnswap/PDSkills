@@ -1,6 +1,6 @@
 ---
 name: pr-fix
-description: Address PR review comments efficiently. Auto-detects PR from current branch, fetches unresolved threads, applies fixes, and posts threaded replies. Use when responding to review feedback.
+description: Address PR review comments efficiently. Auto-detects PR from current branch, fetches unresolved threads, applies fixes, posts threaded replies, and resolves threads. Use when responding to review feedback.
 ---
 
 # PR Fix
@@ -12,6 +12,7 @@ Streamline the workflow for addressing PR review comments. This skill:
 - Fetches all unresolved review threads (review comment threads)
 - Guides through fixing each issue
 - Posts reply comments properly threaded to the original review comment
+- Resolves threads after replies are posted
 
 ## Workflow
 
@@ -32,13 +33,14 @@ Streamline the workflow for addressing PR review comments. This skill:
    - Use GitHub MCP `pull_request_read` with `method: "get_review_comments"`.
    - Paginate with `after` and `perPage` until `pageInfo.hasNextPage` is false:
      - Use the response `pageInfo.endCursor` as the next request's `after`.
+   - This method returns review threads (not a flat list of comments) with metadata like `ID` and `IsResolved`.
    - Filter to only unresolved threads (`IsResolved: false`).
-   - Extract priority badges (P1/P2/P3) from comment body if present.
+   - Extract priority badges (P1/P2/P3) from the top-level comment body if present.
    - For each thread, record:
      - `threadId`: thread `ID`
-     - `commentId`: extract from the first comment `URL` (parse digits from `discussion_r<id>`)
-     - `path` and `line`: from the first comment `Path` / `Line`
-   - Never rely on `path+line` for identity; line numbers drift after edits. Prefer `commentId` (derived from URL).
+     - `commentId`: extract from the top-level comment `URL` (parse digits from `discussion_r<id>`)
+     - `path` and `line`: from the top-level comment `Path` / `Line` (or thread-level `Path` / `Line` if that's what the API returns)
+   - Never rely on `path+line` for identity; line numbers drift after edits. Prefer `commentId`.
 
 3. **Display unresolved threads**
    - Show a numbered list with:
@@ -66,20 +68,31 @@ Streamline the workflow for addressing PR review comments. This skill:
       - If no code change is needed (acknowledgment only), note this
 
    c. **Post reply comment**
-      - Use GitHub MCP `add_reply_to_pull_request_comment` to reply to the original review comment:
-        - `owner`: `<owner>`
-        - `repo`: `<repo>`
-        - `pullNumber`: `<PR_NUMBER>`
-        - `commentId`: `<commentId>` (numeric; extracted from `discussion_r...`)
-        - `body`: `<reply message>`
+      - Prefer GitHub MCP if your toolset exposes a tool to reply to a pull request review comment.
+      - Otherwise, use `gh` to reply to the top-level review comment (`commentId`):
+        ```sh
+        gh api repos/{owner}/{repo}/pulls/comments/{comment_id}/replies \
+          -f body="<reply message>"
+        ```
       - Reply templates:
         - Code fix: "Fixed: <brief description of what was changed>"
         - Acknowledgment: "Acknowledged. <brief response>"
         - Won't fix: "Won't fix: <reason>"
 
-   d. **(Optional) Resolve the thread**
-      - `github-mcp-server` currently does not expose a tool to resolve review threads.
-      - If the user wants threads resolved, do it in the GitHub web UI after replies are posted.
+   d. **Resolve the thread**
+      - Resolve after posting the reply (do not resolve threads you did not respond to).
+      - Prefer GitHub MCP if your toolset exposes a tool to resolve review threads.
+      - Otherwise, use `gh` and the thread `threadId`:
+        ```sh
+        gh api graphql -f query='
+          mutation($threadId: ID!) {
+            resolveReviewThread(input: {threadId: $threadId}) {
+              thread { isResolved }
+            }
+          }
+        ' -f threadId="$THREAD_ID"
+        ```
+      - If resolve fails (permissions, thread already resolved/outdated), report it and continue.
 
    e. **Move to next thread**
 
@@ -95,7 +108,7 @@ Streamline the workflow for addressing PR review comments. This skill:
 When dry run is explicitly requested:
 - List all unresolved threads with full details
 - For each thread, describe what action would be taken
-- Do NOT make any API calls to post replies
+- Do NOT make any API calls to post replies or resolve threads
 - Do NOT modify any files
 
 ## Reply Comment Guidelines
@@ -108,10 +121,10 @@ When dry run is explicitly requested:
 
 ## Edge Cases
 
-- **Comment requires no code change**: Post acknowledgment reply (and optionally resolve via UI)
+- **Comment requires no code change**: Post acknowledgment reply and resolve
 - **New reviews added during session**: Re-fetch threads before processing next item
 - **API rate limiting**: Pause and retry with backoff
-- **Thread already resolved**: Skip and move to next
+- **Thread already resolved**: Skip and move to next (only if `IsResolved` is available)
 - **Multiple comments in thread**: Reply to the first (top-level) comment only
 - **Line numbers drifted**: Match by `commentId` (derived from the comment URL) or comment URL, not by `path+line`.
 
@@ -127,6 +140,7 @@ After completing all fixes:
 - If PR detection is ambiguous, ask the user for the PR URL/number
 - If fetching review threads fails, show the error and suggest using the PR URL as fallback context
 - If reply fails, show the error and continue with the next thread
+- If `gh` is required but unavailable or unauthenticated, ask the user to install/login (or fall back to replying/resolving in the GitHub web UI)
 
 ## Examples
 
