@@ -1,6 +1,6 @@
 ---
 name: release
-description: Create a GitHub release with auto-generated release notes. Analyzes commits since the last release, categorizes changes, drafts release notes, and creates the release after user confirmation.
+description: Create a GitHub release with auto-generated release notes. Analyzes commits since the last release, categorizes changes, drafts release notes, and helps publish the release after user confirmation.
 ---
 
 # Release
@@ -13,27 +13,28 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
 - Analyzes commits since the last release
 - Categorizes changes (features, fixes, improvements, etc.)
 - Generates a release notes draft
-- Creates the release after user confirmation
+- Publishes the release after user confirmation (tag push / workflow trigger / GitHub UI)
 
 ## Workflow
 
 1. **Check prerequisites**
-   - Verify `gh` CLI is installed and authenticated.
    - Ensure the working directory is a git repository.
    - Check that `origin` remote exists.
 
-2. **Get existing releases**
+2. **Determine GitHub repository context**
+   - Determine `owner` and `repo` from `git remote get-url origin` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
+   - If it cannot be determined reliably, ask the user for `<owner>/<repo>`.
+
+3. **Get existing releases**
    - List existing tags:
      ```sh
      git tag -l --sort=-v:refname | head -10
      ```
-   - Get latest release:
-     ```sh
-     gh release list --limit 1
-     ```
-   - If no releases exist, use the first commit as the base.
+   - Get latest release via GitHub MCP `get_latest_release`:
+     - If it exists, use its `tag_name` as `last_tag`.
+     - If the repository has no releases, treat this as the first release and use the first commit (or ask the user for a base tag/commit).
 
-3. **Determine the next version**
+4. **Determine the next version**
    - If the user specifies a version (e.g., `v0.2.0`), use it.
    - Otherwise, suggest the next version based on semantic versioning:
      - Analyze commit messages for breaking changes, features, or fixes.
@@ -42,7 +43,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
      - `fix:`, `chore:`, `docs:`, etc. → patch bump
    - Ask the user to confirm or specify a different version.
 
-4. **Fetch commits since last release**
+5. **Fetch commits since last release**
    - Get commit log:
      ```sh
      git log <last_tag>..HEAD --oneline --no-merges
@@ -56,7 +57,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
      git diff <last_tag>..HEAD --stat
      ```
 
-5. **Categorize changes**
+6. **Categorize changes**
    - Apply the user-facing gate first:
      - Include **user-facing changes only**.
      - Prefer items that are **user-visible changes**, have **external impact / customer-facing changes**, represent **behavioral changes**, or are **public API/behavior changes**.
@@ -70,7 +71,7 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
      - **Other Changes**: user-facing changes that do not fit other categories (e.g., minor compatibility changes, small UX tweaks, accessibility improvements, localization updates)
    - For non-conventional commits, infer category from content.
 
-6. **Generate release notes draft**
+7. **Generate release notes draft**
    - Use this template:
      ```markdown
      ## <Project Name> <version>
@@ -100,26 +101,32 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
    - Omit empty sections.
    - For significant changes, expand with context from:
      - Reading modified files
-     - Examining PR descriptions (if available)
+     - Examining PR descriptions (if available via GitHub MCP)
      - Analyzing the diff
 
-7. **Present draft to user**
+8. **Present draft to user**
    - Display the generated release notes.
    - Call out any unclear items and ask whether they should be included as user-facing changes.
    - Ask for confirmation or edits:
-     - Confirm and create
+     - Confirm and publish
      - Edit the notes (user provides corrections)
      - Cancel
 
-8. **Create the release**
-   - Use `gh release create`:
-     ```sh
-     gh release create <version> --title "<version>" --notes "$(cat <<'EOF'
-     <release notes content>
-     EOF
-     )"
-     ```
-   - Report the release URL on success.
+9. **Publish the release**
+   - This skill avoids `gh` CLI and uses GitHub MCP where possible.
+   - Note: triggering workflows requires the GitHub MCP `actions` toolset (it is not included in the default toolset).
+   - Typical flow:
+     - Create and push the git tag (this often triggers an existing release workflow):
+       - `git tag <version>`
+       - `git push origin <version>`
+     - If the repo uses a manual workflow for releases, trigger it via GitHub MCP:
+       - Use `actions_list` with `method: "list_workflows"` to discover workflows
+       - Use `actions_run_trigger` with `method: "run_workflow"` to trigger the selected workflow (provide `ref` and `inputs` as required by the workflow)
+     - Verify whether a GitHub Release object exists:
+       - Use GitHub MCP `get_release_by_tag` with `tag: <version>`
+       - If it exists, report the release URL
+   - If the repository does not have automation and a GitHub Release object is required:
+     - Create it manually in the GitHub web UI and paste the generated notes.
 
 ## Version Format
 
@@ -182,7 +189,5 @@ Automate the creation of GitHub releases with well-structured release notes. Thi
 
 ## Error Handling
 
-- If `gh` CLI is not installed, show installation instructions.
-- If not authenticated, prompt `gh auth login`.
 - If no commits since last release, report and exit.
-- If release creation fails, show the error and suggest manual creation.
+- If publish fails (permissions, missing workflows, etc.), show the error and suggest manual creation in the GitHub web UI.

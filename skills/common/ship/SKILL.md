@@ -68,7 +68,14 @@ Move in-progress work to a new branch, push it, commit all changes, push commits
        - `- Move current work to <new_branch>` (fallback if no better summary)
      - Testing:
        - `- Not run (not requested)` unless the user asked for tests
-   - Run `gh pr create -B <base_branch> -H <new_branch> -t "<title>" -b "<body>"`.
+   - Determine `owner` and `repo` from `origin` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
+   - Use GitHub MCP `create_pull_request` with:
+     - `owner`: `<owner>`
+     - `repo`: `<repo>`
+     - `base`: `<base_branch>`
+     - `head`: `<new_branch>` (if GitHub requests it, use `<owner>:<new_branch>`)
+     - `title`: `<title>`
+     - `body`: `<body>`
 
 9. Return to the base branch and report results.
    - Run `git switch <base_branch>`.
