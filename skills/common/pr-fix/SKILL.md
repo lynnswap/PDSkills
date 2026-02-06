@@ -28,6 +28,7 @@ Streamline the workflow for addressing PR review comments. This skill:
    - Determine `owner` and `repo` for all subsequent API calls:
      - If the user provides a PR URL, parse `owner` and `repo` from it (e.g. `https://github.com/<owner>/<repo>/pull/<number>`).
      - Otherwise, determine `owner` and `repo` from `git remote get-url origin` (or another selected remote if `origin` is missing).
+     - Fork workflow note: if an `upstream` remote exists and points to a different GitHub repo than `origin`, also capture `upstream_owner`/`upstream_repo` from `git remote get-url upstream` (PRs are often opened in the upstream repo).
    - If the user provides a PR number or URL, use it.
    - Otherwise, detect from the current branch:
      - Get the current branch: `git rev-parse --abbrev-ref HEAD`
@@ -37,6 +38,7 @@ Streamline the workflow for addressing PR review comments. This skill:
        - `state`: `open`
        - `head`: `<owner>:<branch>` (if the branch lives on a fork, use `<fork_owner>:<branch>`)
      - If multiple PRs match, choose the one whose head ref matches exactly; otherwise ask the user.
+     - Fork workflow note: if `upstream_owner`/`upstream_repo` are available, query `list_pull_requests` against the upstream repo first with `head: <fork_owner>:<branch>`, then fall back to querying the `origin` repo.
    - If no PR is found, ask the user to specify one.
    - Ensure you're on the PR head branch locally before editing:
      - Prefer: `gh pr checkout <pull_number>`

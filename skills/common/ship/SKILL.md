@@ -70,7 +70,7 @@ Move in-progress work to a new branch, push it, commit all changes, push commits
        - `- Move current work to <new_branch>` (fallback if no better summary)
      - Testing:
        - `- Not run (not requested)` unless the user asked for tests
-   - Determine `owner` and `repo` from `<remote>` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
+   - Determine `owner` and `repo` from `git remote get-url <remote>` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
    - Use GitHub MCP `create_pull_request` with:
      - `owner`: `<owner>`
      - `repo`: `<repo>`
