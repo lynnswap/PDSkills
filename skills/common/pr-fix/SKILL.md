@@ -71,7 +71,7 @@ Streamline the workflow for addressing PR review comments. This skill:
       - Prefer GitHub MCP if your toolset exposes a tool to reply to a pull request review comment.
       - Otherwise, use `gh` to reply to the top-level review comment (`commentId`):
         ```sh
-        gh api repos/{owner}/{repo}/pulls/comments/{comment_id}/replies \
+        gh api repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies \
           -f body="<reply message>"
         ```
       - Reply templates:
