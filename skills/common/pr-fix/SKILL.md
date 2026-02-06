@@ -17,10 +17,12 @@ Streamline the workflow for addressing PR review comments. This skill:
 ## Workflow
 
 1. **Identify the PR**
+   - Determine `owner` and `repo` for all subsequent API calls:
+     - If the user provides a PR URL, parse `owner` and `repo` from it (e.g. `https://github.com/<owner>/<repo>/pull/<number>`).
+     - Otherwise, determine `owner` and `repo` from `git remote get-url origin` (or another selected remote if `origin` is missing).
    - If the user provides a PR number or URL, use it.
    - Otherwise, detect from the current branch:
      - Get the current branch: `git rev-parse --abbrev-ref HEAD`
-     - Determine `owner` and `repo` from `git remote get-url origin`
      - Use GitHub MCP `list_pull_requests` with:
        - `owner`: `<owner>`
        - `repo`: `<repo>`
