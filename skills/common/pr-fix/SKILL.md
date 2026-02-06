@@ -14,6 +14,14 @@ Streamline the workflow for addressing PR review comments. This skill:
 - Posts reply comments properly threaded to the original review comment
 - Resolves threads after replies are posted
 
+## Non-interactive Defaults (Important)
+
+- Run end-to-end without confirmation prompts. Treat invoking `/pr-fix` as permission to:
+  - Apply fixes
+  - Commit and push changes to the PR branch
+  - Reply to review comments and resolve threads
+- Only ask the user when blocked (e.g., PR cannot be identified, auth/tools missing, or stash restore conflicts).
+
 ## Workflow
 
 1. **Identify the PR**
@@ -30,6 +38,14 @@ Streamline the workflow for addressing PR review comments. This skill:
        - `head`: `<owner>:<branch>` (if the branch lives on a fork, use `<fork_owner>:<branch>`)
      - If multiple PRs match, choose the one whose head ref matches exactly; otherwise ask the user.
    - If no PR is found, ask the user to specify one.
+   - Ensure you're on the PR head branch locally before editing:
+     - Prefer: `gh pr checkout <pull_number>`
+   - Keep commits clean without prompting:
+     - If the working tree is dirty, auto-stash before making fixes:
+       - `git stash push -u -m "pr-fix: auto-stash before applying review fixes"`
+     - After all fixes are committed/pushed, restore it:
+       - `git stash pop`
+       - If restore conflicts, report and stop (do not force-resolve silently).
 
 2. **Fetch unresolved review threads**
    - Use GitHub MCP `pull_request_read` with `method: "get_review_comments"`.
@@ -55,6 +71,7 @@ Streamline the workflow for addressing PR review comments. This skill:
 
 4. **Proceed with all threads by default**
    - Do **not** ask which threads to handle.
+   - Do **not** ask for confirmation to commit/push/reply/resolve.
    - Address all unresolved threads sequentially.
    - Only if the user explicitly requests it, switch to:
      - Select specific threads by number
@@ -68,6 +85,10 @@ Streamline the workflow for addressing PR review comments. This skill:
    b. **Implement the fix**
       - Apply code changes as needed
       - If no code change is needed (acknowledgment only), note this
+      - If code changes were made, commit and push them before replying/resolving:
+        - Stage the intended changes (after auto-stash, `git add -A` is typically fine)
+        - Commit with a concise, diff-based message
+        - Push to the PR branch (e.g., `git push`, or `git push -u origin HEAD` if needed)
 
    c. **Post reply comment**
       - Prefer GitHub MCP if your toolset exposes a tool to reply to a pull request review comment.
@@ -101,9 +122,8 @@ Streamline the workflow for addressing PR review comments. This skill:
 6. **Report completion**
    - Number of threads addressed
    - Number of threads remaining (if any)
-   - Suggest next steps:
-     - Commit changes if there are uncommitted modifications
-     - Push and request re-review if appropriate
+   - Mention whether fixes were committed and pushed
+   - Mention whether an auto-stash was restored (or why it was not)
 
 ## Dry Run Mode
 
@@ -133,7 +153,6 @@ When dry run is explicitly requested:
 ## Integration with Other Skills
 
 After completing all fixes:
-- If there are uncommitted changes, suggest using `/ship` or manual commit
 - If user wants re-review, suggest commenting `@codex review` on the PR (use GitHub MCP `add_issue_comment`)
 
 ## Error Handling
