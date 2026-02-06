@@ -70,12 +70,17 @@ Move in-progress work to a new branch, push it, commit all changes, push commits
        - `- Move current work to <new_branch>` (fallback if no better summary)
      - Testing:
        - `- Not run (not requested)` unless the user asked for tests
-   - Determine `owner` and `repo` from `git remote get-url <remote>` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`).
+   - Determine the PR target repo (fork workflow aware):
+     - First, derive the pushed branch repo from `git remote get-url <remote>` (supports HTTPS/SSH URLs like `https://github.com/<owner>/<repo>.git` or `git@github.com:<owner>/<repo>.git`) and store it as `push_owner`/`push_repo`.
+     - If an `upstream` remote exists and points to a different GitHub repo than `<remote>`, prefer creating the PR in the upstream repo:
+       - Derive `base_owner`/`base_repo` from `git remote get-url upstream`.
+       - Use `head` as `<push_owner>:<new_branch>` (cross-repo PR).
+     - Otherwise, create the PR in `push_owner`/`push_repo` and use `head` as `<new_branch>` (or `<push_owner>:<new_branch>` if GitHub requests it).
    - Use GitHub MCP `create_pull_request` with:
-     - `owner`: `<owner>`
-     - `repo`: `<repo>`
+     - `owner`: `<base_owner>` (or `push_owner` when no upstream remote is used)
+     - `repo`: `<base_repo>` (or `push_repo` when no upstream remote is used)
      - `base`: `<base_branch>`
-     - `head`: `<new_branch>` (if GitHub requests it, use `<owner>:<new_branch>`)
+     - `head`: `<head>` (see fork workflow note above)
      - `title`: `<title>`
      - `body`: `<body>`
 
