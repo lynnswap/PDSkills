@@ -21,7 +21,7 @@ Run tests first when possible, then run a local self-review loop with `codex ...
 7. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the review command (default stays as-is when omitted). Use a value supported by the review model.
 8. Run the chosen `codex ... review` command (plus optional `-c ...` from steps 6-7) with the temp env from step 4, using a 30-minute (1800s) timeout.
 9. If findings exist, fix them.
-10. Repeat steps 8-9 until clean or 10 iterations.
+10. Repeat steps 8-9 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
 11. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 8.
 12. Stop after 10 iterations and report remaining issues with context.
 
@@ -82,11 +82,22 @@ Use the first match in this priority order:
 5. If `package.json` has a `test` script: use `pnpm test` when `pnpm-lock.yaml` exists, otherwise `npm test`.
 6. If no test command is found, report "Not run (no test command configured)".
 
-## Re-review after fixes (base vs uncommitted)
+## Re-review after fixes
+### `--uncommitted`
+`--uncommitted` reviews the current worktree. After fixes, re-run the same `--uncommitted` review mode.
+
+### `--base <branch>`
 `--base <branch>` reviews committed changes on the current branch against `<branch>`. It does not include new uncommitted fixes you apply while addressing findings.
 
 After applying fixes from a base-branch review, choose one:
 - If commits are allowed and desired, commit the fixes and re-run the same `--base <branch>` review mode.
+- Otherwise, re-run with `--uncommitted` so the latest worktree state is reviewed.
+
+### `--commit <sha>`
+`--commit <sha>` reviews an immutable commit. If you apply fixes in your working tree, re-running `--commit <sha>` will keep reviewing the original commit and will not include the fixes.
+
+After applying fixes from a commit-target review, choose one:
+- If commits are allowed and desired, commit the fixes and re-run with `--commit <new_sha>` (or switch to `--base <branch>`).
 - Otherwise, re-run with `--uncommitted` so the latest worktree state is reviewed.
 
 Only create commits when the user explicitly requested it or the repository policy allows it. If unsure, ask.
