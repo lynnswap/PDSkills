@@ -7,7 +7,7 @@ description: Run OpenAI Codex CLI reviews from Claude Code. Use when the user as
 
 ## Overview
 
-Run `codex review` and iterate on fixes until the review is clean. Claude Code applies fixes locally and re-runs the review.
+Run `codex --sandbox workspace-write review` and iterate on fixes until the review is clean. Claude Code applies fixes locally and re-runs the review.
 
 ## Workflow
 
@@ -22,7 +22,12 @@ Run `codex review` and iterate on fixes until the review is clean. Claude Code a
 4. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the command (default stays as-is when omitted). Use a value supported by the review model.
 5. Run `codex review` with the chosen target and any custom prompt (plus the optional `-c review_model="MODEL"` from step 3 and `-c model_reasoning_effort="EFFORT"` from step 4).
 6. Read the review output and extract actionable findings.
-7. If findings exist, fix them in the codebase and re-run the same review target.
+7. If findings exist, fix them in the codebase and re-run:
+   - If the target was `--uncommitted`, re-run `--uncommitted`.
+   - If the target was `--commit <sha>`, prefer re-running with `--uncommitted` (so new fixes are included), unless the user asked to create a follow-up commit and re-review that commit explicitly.
+   - If the target was `--base <branch>`, note that `--base` does not include new uncommitted fixes:
+     - If commits are allowed and desired, commit the fixes and re-run the same `--base <branch>` target.
+     - Otherwise, re-run with `--uncommitted` so the latest worktree state is reviewed.
 8. Repeat until no findings remain or after 10 loops, then report status.
 
 ## Temp directory setup
@@ -37,7 +42,10 @@ ZDOTDIR="$TMPDIR/zsh"
 mkdir -p "$ZDOTDIR"
 XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
 DARWIN_USER_TEMP_DIR="$TMPDIR"
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR
+DARWIN_USER_CACHE_DIR="$TMPDIR/cache"
+CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache"
+mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH"
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH
 ```
 
 Only `~/.claude/tmp` is allowed for temp usage. Do not create temp directories inside the repo or under `/tmp`.
@@ -57,8 +65,11 @@ ZDOTDIR="$TMPDIR/zsh" && \
 mkdir -p "$ZDOTDIR" && \
 XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
 DARWIN_USER_TEMP_DIR="$TMPDIR" && \
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
-codex review --uncommitted [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
+DARWIN_USER_CACHE_DIR="$TMPDIR/cache" && \
+CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache" && \
+mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH && \
+codex --sandbox workspace-write review --uncommitted [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
@@ -68,8 +79,11 @@ ZDOTDIR="$TMPDIR/zsh" && \
 mkdir -p "$ZDOTDIR" && \
 XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
 DARWIN_USER_TEMP_DIR="$TMPDIR" && \
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
-codex review --base <branch> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
+DARWIN_USER_CACHE_DIR="$TMPDIR/cache" && \
+CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache" && \
+mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH && \
+codex --sandbox workspace-write review --base <branch> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ```sh
@@ -79,8 +93,11 @@ ZDOTDIR="$TMPDIR/zsh" && \
 mkdir -p "$ZDOTDIR" && \
 XCRUN_CACHE_PATH="$TMPDIR/xcrun_db" && \
 DARWIN_USER_TEMP_DIR="$TMPDIR" && \
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR && \
-codex review --commit <sha> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
+DARWIN_USER_CACHE_DIR="$TMPDIR/cache" && \
+CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache" && \
+mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH" && \
+export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH && \
+codex --sandbox workspace-write review --commit <sha> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
 ```
 
 ## Output handling
