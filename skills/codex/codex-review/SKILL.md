@@ -6,7 +6,7 @@ description: Self-review loop for code changes. Use when Codex edits files or pr
 # Codex Review
 
 ## Overview
-Run tests first when possible, then run a local self-review loop with `codex review` after code changes, using a 30-minute timeout for the review command, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
+Run tests first when possible, then run a local self-review loop with `codex review` after code changes, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
 
 ## Workflow
 1. Confirm the repo is a git checkout and changes exist. If `git status --porcelain` is empty, skip the loop.
@@ -16,7 +16,7 @@ Run tests first when possible, then run a local self-review loop with `codex rev
    - Use `--uncommitted` to review staged/unstaged/untracked changes (worktree-only).
    - Use `--base <base>` to review committed changes on the current branch against a base branch (see "Base selection").
    - Use `--commit <sha>` to review the changes introduced by a single commit.
-5. Run the chosen `codex review` command using a 30-minute (1800s) timeout.
+5. Run the chosen `codex review` command and wait for completion. Depending on repository size and review scope, this can take around 10-20 minutes.
 6. If findings exist, fix them.
 7. Repeat steps 5-6 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
 8. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 5.
@@ -63,3 +63,4 @@ Only create commits when the user explicitly requested it or the repository poli
 ## Notes
 - Honor explicit user requests to skip review or tests.
 - Ask the user to choose the base when ambiguous; do not guess silently.
+- Do not add ad-hoc liveness checks while `codex review` is running (for example, extra status commands) unless there are clear error signals or an unusually long stall.
