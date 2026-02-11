@@ -59,23 +59,5 @@ PDSkills は Codex と Claude 向けの再利用可能なスキルを管理す�
 - `scripts/`: 補助スクリプト（デプロイ含む）
 - `Sources/`: Swift パッケージのソース（現状は最小構成）
 
-## Note (`codex review`)
-
-`~/.codex/config.toml` で `model_reasoning_effort` と `review_model` を併用している場合、`codex review` 実行時に `review_model` だけでなく `model_reasoning_effort` も引き継がれ、組み合わせによっては 400 エラーになることがあります。
-
-```toml
-model = "gpt-5.3-codex"
-model_reasoning_effort = "xhigh"
-model_reasoning_summary = "detailed"
-web_search = "live"
-personality = "friendly"
-suppress_unstable_features_warning = true
-
-review_model = "gpt-5.1-codex-mini"
-```
-
-- エラー例: `Unsupported value: 'xhigh' is not supported with the 'gpt-5.1-codex-mini' model`
-- ワークアラウンド: `model_reasoning_effort = "xhigh"` をコメントアウトする
-
 ## ライセンス
 MIT。詳細は `LICENSE` を参照。
