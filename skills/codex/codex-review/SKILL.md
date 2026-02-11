@@ -1,72 +1,26 @@
 ---
 name: codex-review
-description: Self-review loop for code changes. Use when Codex edits files or prepares a PR and should run `codex exec review --json`, extract only the final `agent_message`, fix findings, and re-run until clean (max 10). Also run tests when a test command is configured or detectable.
+description: Self-review loop for code changes. Use when Codex edits files or prepares a PR and should run `codex review`, fix findings, and re-run until clean (max 10). Also run tests when a test command is configured or detectable.
 ---
 
 # Codex Review
 
 ## Overview
-Run tests first when possible, then run a local self-review loop with `codex exec review --json` after code changes, extract only the final `agent_message` from JSON events, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
+Run tests first when possible, then run a local self-review loop with `codex review` after code changes, using a 30-minute timeout for the review command, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
 
 ## Workflow
 1. Confirm the repo is a git checkout and changes exist. If `git status --porcelain` is empty, skip the loop.
 2. Confirm the working directory is the repo root for the changes under review. If changes live in a nested repo (e.g., `dependencies/<Repo>`), run all commands from that repo root or set `workdir`/`-C` so paths like `Sources/` resolve correctly.
 3. Resolve the test command (see "Test selection") and run tests now. If tests fail, fix and repeat step 3. If no test command is found, continue.
-4. Prepare the temp environment under `~/.codex/tmp` (see "Temp directory setup"). Ensure these env vars are set in the process environment that launches `codex ... review` (a wrapper script is fine as long as the vars are exported for the `codex` process).
-5. Choose the review mode:
+4. Choose the review mode:
    - Use `--uncommitted` to review staged/unstaged/untracked changes (worktree-only).
    - Use `--base <base>` to review committed changes on the current branch against a base branch (see "Base selection").
    - Use `--commit <sha>` to review the changes introduced by a single commit.
-6. If the user wants to override the review model, append `-c review_model="MODEL"` to the review command (default stays as-is when omitted).
-7. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the review command (default stays as-is when omitted). Use a value supported by the review model.
-8. Run the chosen `codex exec review --json` command (plus optional `-c ...` from steps 6-7) with the temp env from step 4, using a 30-minute (1800s) timeout, and extract only `agent_message` output.
-   - When piping to `jq`, enable `pipefail` so failures from `codex exec review --json` are not masked by the pipeline.
-   - Example:
-    `set -o pipefail && codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r -s 'map(select(.type=="item.completed" and .item.type=="agent_message") | .item.text) | last // empty'`
-9. If findings exist, fix them.
-10. Repeat steps 8-9 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
-11. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 8.
-12. Stop after 10 iterations and report remaining issues with context.
-
-## Temp directory setup
-Use a per-run temp directory to avoid `/tmp` failures and allow parallel runs. Set these env vars in the process that launches `codex exec review --json`.
-Only `~/.codex/tmp` is allowed for temp usage. Do not create temp directories inside the repo (e.g., `.tmp`) or under `/tmp`.
-When running with `--sandbox workspace-write`, ensure `ZDOTDIR` is inside `TMPDIR` so the shell does not access paths outside the sandbox.
-Avoid `~/.codex/tmp/zsh.*` or other `TMPDIR`-external `ZDOTDIR` paths.
-
-```
-mkdir -p ~/.codex/tmp
-TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)"
-ZDOTDIR="$TMPDIR/zsh"
-mkdir -p "$ZDOTDIR"
-XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
-DARWIN_USER_TEMP_DIR="$TMPDIR"
-DARWIN_USER_CACHE_DIR="$TMPDIR/cache"
-CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache"
-mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH"
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH
-```
-
-Recommended launch example:
-
-```
-mkdir -p ~/.codex/tmp
-TMPDIR="$(mktemp -d ~/.codex/tmp/codex-review.XXXXXXXX)"
-ZDOTDIR="$TMPDIR/zsh"
-mkdir -p "$ZDOTDIR"
-XCRUN_CACHE_PATH="$TMPDIR/xcrun_db"
-DARWIN_USER_TEMP_DIR="$TMPDIR"
-DARWIN_USER_CACHE_DIR="$TMPDIR/cache"
-CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache"
-mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH"
-export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH
-set -o pipefail
-codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r -s 'map(select(.type=="item.completed" and .item.type=="agent_message") | .item.text) | last // empty'
-```
-
-If you cannot set these env vars directly on the `codex exec review --json` process, stop and ask the user.
-
-Keep the temp dir for debugging if needed; otherwise it can be removed after the loop.
+5. Run the chosen `codex review` command using a 30-minute (1800s) timeout.
+6. If findings exist, fix them.
+7. Repeat steps 5-6 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
+8. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 5.
+9. Stop after 10 iterations and report remaining issues with context.
 
 ## Base selection
 Use the first match in this priority order, then keep it fixed for the loop:
