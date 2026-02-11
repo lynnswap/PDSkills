@@ -58,23 +58,5 @@ These are not meant to be invoked standalone; instead, reference them from `AGEN
 - `scripts/`: Helper scripts (including deploy)
 - `Sources/`: Swift package sources (currently minimal)
 
-## Note (`codex review`)
-
-If `model_reasoning_effort` and `review_model` are both set in `~/.codex/config.toml`, `codex review` may inherit both values and fail with a 400 error for unsupported combinations.
-
-```toml
-model = "gpt-5.3-codex"
-model_reasoning_effort = "xhigh"
-model_reasoning_summary = "detailed"
-web_search = "live"
-personality = "friendly"
-suppress_unstable_features_warning = true
-
-review_model = "gpt-5.1-codex-mini"
-```
-
-- Example error: `Unsupported value: 'xhigh' is not supported with the 'gpt-5.1-codex-mini' model`
-- Workaround: comment out `model_reasoning_effort = "xhigh"`
-
 ## License
 MIT. See `LICENSE` for details.
