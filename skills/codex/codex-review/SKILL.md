@@ -23,6 +23,15 @@ Run tests first when possible, then run a local self-review loop with `codex rev
 8. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 5.
 9. Stop after 10 iterations and report remaining issues with context.
 
+## Long-running review policy
+- Never terminate `codex review` based only on elapsed time.
+- Keep waiting until the review process exits.
+- If there is no output for 45 minutes, report status to the user and continue waiting.
+- Stop only when:
+  1. the process exits,
+  2. a clear fatal error occurs, or
+  3. the user explicitly asks to cancel.
+
 ## Base selection
 Use the first match in this priority order, then keep it fixed for the loop:
 1. Use `CODEX_REVIEW_BASE` if set.
@@ -64,4 +73,4 @@ Only create commits when the user explicitly requested it or the repository poli
 ## Notes
 - Honor explicit user requests to skip review or tests.
 - Ask the user to choose the base when ambiguous; do not guess silently.
-- Do not add ad-hoc liveness checks while `codex review` is running (for example, extra status commands) unless there are clear error signals or an unusually long stall.
+- Do not add ad-hoc liveness checks while `codex review` is running (for example, extra status commands) unless there are clear fatal error signals.
