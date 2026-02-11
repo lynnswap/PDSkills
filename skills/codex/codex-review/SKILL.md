@@ -1,12 +1,12 @@
 ---
 name: codex-review
-description: Self-review loop for code changes. Use when Codex edits files or prepares a PR and should run `codex --sandbox workspace-write review` (or `codex exec --sandbox workspace-write review`), fix findings, and re-run until clean (max 10). Also run tests when a test command is configured or detectable.
+description: Self-review loop for code changes. Use when Codex edits files or prepares a PR and should run `codex exec review --json`, extract only the final `agent_message`, fix findings, and re-run until clean (max 10). Also run tests when a test command is configured or detectable.
 ---
 
 # Codex Review
 
 ## Overview
-Run tests first when possible, then run a local self-review loop with `codex ... review` after code changes, using a 30-minute timeout for the review command, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
+Run tests first when possible, then run a local self-review loop with `codex exec review --json` after code changes, extract only the final `agent_message` from JSON events, choose the correct review mode (`--uncommitted`, `--base`, or `--commit`), and re-run tests if review fixes changed code.
 
 ## Workflow
 1. Confirm the repo is a git checkout and changes exist. If `git status --porcelain` is empty, skip the loop.
@@ -19,14 +19,16 @@ Run tests first when possible, then run a local self-review loop with `codex ...
    - Use `--commit <sha>` to review the changes introduced by a single commit.
 6. If the user wants to override the review model, append `-c review_model="MODEL"` to the review command (default stays as-is when omitted).
 7. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the review command (default stays as-is when omitted). Use a value supported by the review model.
-8. Run the chosen `codex ... review` command (plus optional `-c ...` from steps 6-7) with the temp env from step 4, using a 30-minute (1800s) timeout.
+8. Run the chosen `codex exec review --json` command (plus optional `-c ...` from steps 6-7) with the temp env from step 4, using a 30-minute (1800s) timeout, and extract only `agent_message` output.
+   - Example:
+     `codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text'`
 9. If findings exist, fix them.
 10. Repeat steps 8-9 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
 11. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 8.
 12. Stop after 10 iterations and report remaining issues with context.
 
 ## Temp directory setup
-Use a per-run temp directory to avoid `/tmp` failures and allow parallel runs. Set these env vars in the process that launches `codex review`.
+Use a per-run temp directory to avoid `/tmp` failures and allow parallel runs. Set these env vars in the process that launches `codex exec review --json`.
 Only `~/.codex/tmp` is allowed for temp usage. Do not create temp directories inside the repo (e.g., `.tmp`) or under `/tmp`.
 When running with `--sandbox workspace-write`, ensure `ZDOTDIR` is inside `TMPDIR` so the shell does not access paths outside the sandbox.
 Avoid `~/.codex/tmp/zsh.*` or other `TMPDIR`-external `ZDOTDIR` paths.
@@ -57,10 +59,10 @@ DARWIN_USER_CACHE_DIR="$TMPDIR/cache"
 CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache"
 mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH"
 export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH
-codex --sandbox workspace-write review --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"]
+codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text'
 ```
 
-If you cannot set these env vars directly on the `codex review` process, stop and ask the user.
+If you cannot set these env vars directly on the `codex exec review --json` process, stop and ask the user.
 
 Keep the temp dir for debugging if needed; otherwise it can be removed after the loop.
 
