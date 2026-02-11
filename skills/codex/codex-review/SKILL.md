@@ -20,8 +20,9 @@ Run tests first when possible, then run a local self-review loop with `codex exe
 6. If the user wants to override the review model, append `-c review_model="MODEL"` to the review command (default stays as-is when omitted).
 7. If the user wants to override reasoning effort, append `-c model_reasoning_effort="EFFORT"` to the review command (default stays as-is when omitted). Use a value supported by the review model.
 8. Run the chosen `codex exec review --json` command (plus optional `-c ...` from steps 6-7) with the temp env from step 4, using a 30-minute (1800s) timeout, and extract only `agent_message` output.
+   - When piping to `jq`, enable `pipefail` so failures from `codex exec review --json` are not masked by the pipeline.
    - Example:
-     `codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text'`
+     `set -o pipefail && codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text'`
 9. If findings exist, fix them.
 10. Repeat steps 8-9 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
 11. If any fixes were made after the initial test run, re-run tests (see "Test selection"). If tests fail, fix and return to step 8.
@@ -59,6 +60,7 @@ DARWIN_USER_CACHE_DIR="$TMPDIR/cache"
 CLANG_MODULE_CACHE_PATH="$TMPDIR/clang-module-cache"
 mkdir -p "$DARWIN_USER_CACHE_DIR" "$CLANG_MODULE_CACHE_PATH"
 export TMPDIR ZDOTDIR XCRUN_CACHE_PATH DARWIN_USER_TEMP_DIR DARWIN_USER_CACHE_DIR CLANG_MODULE_CACHE_PATH
+set -o pipefail
 codex exec review --json --base <base> [-c review_model="MODEL"] [-c model_reasoning_effort="EFFORT"] | jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text'
 ```
 
