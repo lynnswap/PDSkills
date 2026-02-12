@@ -132,7 +132,6 @@ Streamline the workflow for addressing PR review comments. This skill:
    - Number of threads remaining (if any)
    - Mention whether fixes were committed and pushed
    - Mention whether an auto-stash was restored (or why it was not)
-   - If `@codex review` was posted (see below), mention it
 
 ## Dry Run Mode
 
@@ -158,15 +157,6 @@ When dry run is explicitly requested:
 - **Thread already resolved**: Skip and move to next (only if `IsResolved` is available)
 - **Multiple comments in thread**: Reply to the first (top-level) comment only
 - **Line numbers drifted**: Match by `commentId` (derived from the comment URL) or comment URL, not by `path+line`.
-
-## Integration with Other Skills
-
-After completing all fixes:
-- If you addressed any review threads whose top-level comment author is `chatgpt-codex-connector`:
-  - After pushing fixes, request re-review by posting a single-line PR comment: `@codex review`
-  - Prefer GitHub MCP `add_issue_comment` (use the PR number as `issue_number`)
-  - Fallback: `gh pr comment <pull_number> --body "@codex review"`
-  - Skip in dry run mode, and skip if no code changes were committed/pushed
 
 ## Error Handling
 
