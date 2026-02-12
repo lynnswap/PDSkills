@@ -27,7 +27,6 @@ Explicitly invoked skills that perform specific tasks. Trigger with `/skill-name
 - `ask-codex`: Consult Codex for questions, feedback, reviews, or discussions.
 
 #### Common
-- `kickoff`: Create and push a new branch before work, then commit at the end.
 - `pr-fix`: Address PR review comments by fetching unresolved threads, applying fixes, replying, and resolving threads.
 - `release`: Create GitHub releases with auto-generated release notes from commit history.
 - `ship`: Move in-progress work to a new branch, run `codex-review`, and open a PR back to the base branch.
