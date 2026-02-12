@@ -67,11 +67,11 @@ if [[ "$found_hide_reasoning" != "true" ]]; then
 fi
 
 if [[ "$found_review_model" != "true" ]]; then
-  default_review_config+=(-c review_model=gpt-5.1-codex-mini)
+  default_review_config+=(-c review_model=gpt-5.3-codex-spark)
 fi
 
-if [[ "$found_reasoning_effort" != "true" ]]; then
-  default_review_config+=(-c model_reasoning_effort=high)
+if [[ "$found_reasoning_effort" != "true" && "$found_review_model" != "true" ]]; then
+  default_review_config+=(-c model_reasoning_effort=xhigh)
 fi
 
 set +e
