@@ -109,7 +109,18 @@ if [[ -s "$events" ]]; then
     jq -rs '
       def parse_error_message:
         if type == "string" then
-          (try (fromjson | .error.message) catch .)
+          . as $raw
+          | (try fromjson catch null) as $parsed
+          | if ($parsed | type) == "object" then
+              (
+                $parsed.error.message
+                // $parsed.message
+                // ($parsed.error | select(type == "string"))
+                // $raw
+              )
+            else
+              $raw
+            end
         else
           ""
         end;
