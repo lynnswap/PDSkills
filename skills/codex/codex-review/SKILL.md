@@ -48,6 +48,7 @@ cd <path/to/this-skill-dir>
    - Use `--commit <sha>` to review the changes introduced by a single commit.
 4. Run the chosen review command in quiet mode and wait for completion. Depending on repository size and review scope, this can take around 10-20 minutes.
    - Use the skill-local wrapper `scripts/codex-review-quiet.sh` so only the final review message is printed.
+   - If there are other independent pending tasks, you may keep the review running in the background and execute those tasks first.
    - If the command fails, inspect the log and surface the minimal relevant error.
 5. If findings exist, fix them.
 6. Repeat steps 4-5 until clean or 10 iterations. Follow "Re-review after fixes" so each re-run includes your latest fixes (especially for `--base` and `--commit`).
@@ -58,6 +59,9 @@ cd <path/to/this-skill-dir>
 - Keep waiting until the review process exits.
 - In quiet mode there may be intentionally no terminal output; keep waiting without polling/reading the log unless the process fails.
 - Do not emit periodic status updates while waiting; just wait.
+- If review is running in the background, avoid liveness polling and continue only with tasks that do not depend on review results. Collect review output when that independent work is done.
+- Do not run process-table checks (`ps`, `pgrep`, `pkill`, `kill`, `killall`) while waiting. Treat "no output for a long time" as expected behavior in quiet mode.
+- Never "clean up" review processes on your own judgment. Only stop a running review when the user explicitly asks to cancel.
 - Stop only when:
   1. the process exits,
   2. a clear fatal error occurs, or
@@ -96,3 +100,4 @@ Only create commits when the user explicitly requested it or the repository poli
 - Honor explicit user requests to skip review.
 - Ask the user to choose the base when ambiguous; do not guess silently.
 - Do not add ad-hoc liveness checks while `codex review` is running (for example, extra status commands) unless there are clear fatal error signals.
+- If user says "not stuck", trust that and continue waiting; do not override with your own stall diagnosis.
