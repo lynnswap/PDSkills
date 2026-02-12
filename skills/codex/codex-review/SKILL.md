@@ -22,8 +22,11 @@ By default, run reviews in **quiet mode** so only the final review comments are 
 - Wrapper-only args: `-C <DIR>` / `--cd <DIR>`: `cd` to the repo root before running `codex`.
 - Forwarded args: everything else is forwarded to `codex review` unchanged (for example `--base ...`, `--uncommitted`, `--commit ...`, plus any `-c ...` you choose to pass).
 - Output behavior (while running): stdout/stderr are redirected to a temp log file (so the chat stays quiet).
-- Output behavior (success): prints only the final review message (the `codex exec -o <file>` output file contents), then deletes the temp files.
-- Output behavior (failure): prints a short error and the paths to the temp `log` and `last_message` files, and keeps them for inspection.
+- Output behavior (success): prints only the final review message, then deletes the temp files.
+- Output behavior (failure): prints the last agent message (if available), a short error summary, and the paths to the temp `log` and `events` files, and keeps them for inspection.
+- Notes:
+  - The wrapper uses `codex exec review --json` and `jq` to extract the final review text from the JSONL event stream.
+  - `jq` is required.
 - Examples:
 ```bash
 cd <path/to/this-skill-dir>
