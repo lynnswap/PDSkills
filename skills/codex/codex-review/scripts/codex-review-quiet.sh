@@ -74,8 +74,18 @@ if [[ "$found_reasoning_effort" != "true" && "$found_review_model" != "true" ]];
   default_review_config+=(-c model_reasoning_effort=xhigh)
 fi
 
+cmd=(codex exec review --json)
+
+if ((${#hide_reasoning_config[@]})); then
+  cmd+=("${hide_reasoning_config[@]}")
+fi
+if ((${#default_review_config[@]})); then
+  cmd+=("${default_review_config[@]}")
+fi
+cmd+=("${rest[@]}")
+
 set +e
-codex exec review --json "${hide_reasoning_config[@]}" "${default_review_config[@]}" "${rest[@]}" >"$events" 2>"$log"
+"${cmd[@]}" >"$events" 2>"$log"
 status=$?
 set -e
 
