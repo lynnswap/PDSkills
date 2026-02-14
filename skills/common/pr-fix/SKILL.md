@@ -18,6 +18,7 @@ Streamline the workflow for addressing PR review comments. This skill:
 
 - Run end-to-end without confirmation prompts. Treat invoking `/pr-fix` as permission to:
   - Apply fixes
+  - Run required self-checks from `AGENTS.md` before irreversible actions when code changes exist
   - Commit and push changes to the PR branch
   - Reply to review comments and resolve threads
 - Only ask the user when blocked (e.g., PR cannot be identified, auth/tools missing, or stash restore conflicts).
@@ -93,7 +94,11 @@ Streamline the workflow for addressing PR review comments. This skill:
    b. **Implement the fix**
       - Apply code changes as needed
       - If no code change is needed (acknowledgment only), note this
-      - If code changes were made, commit and push them before replying/resolving:
+      - If code changes were made, run self-checks according to `AGENTS.md` before committing/pushing/replying/resolving:
+        - Follow `Self Check & Fix Flow` and related build/test command guidance for the project type
+        - Repeat until checks are clean
+        - Run `codex-review` only when the user explicitly requests it
+      - After self-check passes, commit and push before replying/resolving:
         - Stage the intended changes (after auto-stash, `git add -A` is typically fine)
         - Commit with a concise, diff-based message
         - Push to the PR branch (e.g., `git push`, or `git push -u origin HEAD` if needed)
@@ -131,6 +136,7 @@ Streamline the workflow for addressing PR review comments. This skill:
    - Number of threads addressed
    - Number of threads remaining (if any)
    - Mention whether fixes were committed and pushed
+   - Mention self-check status for code-changing threads
    - Mention whether an auto-stash was restored (or why it was not)
 
 ## Dry Run Mode
