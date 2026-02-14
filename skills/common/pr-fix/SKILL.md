@@ -97,7 +97,7 @@ Streamline the workflow for addressing PR review comments. This skill:
       - If code changes were made, run self-checks according to `AGENTS.md` before committing/pushing/replying/resolving:
         - Follow `Self Check & Fix Flow` and related build/test command guidance for the project type
         - Repeat until checks are clean
-        - Run `codex-review` only when the user explicitly requests it
+        - Run `codex-review` for every code-changing thread (follow the `codex-review` skill loop until clean, up to its max retry count)
       - After self-check passes, commit and push before replying/resolving:
         - Stage the intended changes (after auto-stash, `git add -A` is typically fine)
         - Commit with a concise, diff-based message
